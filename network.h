@@ -1,83 +1,81 @@
+/*传入json（QVariant）格式如
+ * "{"url":"","title":"","artist":"","cover":"","lyric":""}"
+ * url->歌曲路径，cover->图片路径，lyric->歌词路径
+ * 下载，如果成功，则发送seccessed(QVariant)信号，将修改后的json数据随信号发射
+ */
 #ifndef NETWORK_H
 #define NETWORK_H
 
 #include <QObject>
-#include<QDomElement>
+#include<QString>
 #include<QDebug>
 #include<QNetworkAccessManager>
 #include<QNetworkReply>
+#include<QVariant>
+#include<QStack>
+#include<QUrl>
 #include<QFile>
-enum RequestType{MP3,LYRIC,COVER};
+#include<QJsonObject>
+#include<QNetworkReply>
+
 class Network : public QObject
 {
     Q_OBJECT
 public:
+
+
+    //下载的文件类型，歌曲，歌词，图片
+    enum DownloadType{Song,Lyric,Pic};
+
+    //请求阶段，信息，链接，下载
+    enum Period{RequestInfo,RequestLink,Download};
+
+    struct InputObj{
+        QVariant jsonVar;
+        DownloadType fileType;
+    };
+
     explicit Network(QObject *parent = 0);
-
-    //根据歌曲名，歌手等信息搜索下载MP3,歌词，封面等，返回文件保存完整路径，如果未设定路径，则保存到当前目录。
-    QString getFile(QString music,QString singer,RequestType fileType);
-    void cancel();
-    bool setPath(QString path);
-
+    Q_INVOKABLE void getLyric(const QVariant& json);
+    Q_INVOKABLE void getSong(const QVariant& json);
+    Q_INVOKABLE void getPic(const QVariant& json);
 
 signals:
-
-
+    void succeeded(QVariant json);
 public slots:
 
-
 private slots:
-        void songIdReplyFinished();
-        void urlReplyFinished();
-        void downloadFinished();
-        void downlaodReadyRead();
-
+    void replyFinished();
+    void replyReadied();
 
 private:
+    void startNext();
+    void request(const QUrl& url);
+
+    QNetworkReply* reply;
+
+    DownloadType fileType;
+
+    Period period;
+
+    //储存song_id,singer等信息
+    QJsonObject infoJson;
+
+    //储存歌词及歌曲下载链接
+    QJsonObject linkJson;
+
+    //用于发射信号succeeded();
+    QJsonObject emitJson;
+
+    int requestTimes;
+
+    QUrl currentRequestUrl;
 
     QNetworkAccessManager manager;
-    //下载url为downloadUrl,返回下载的文件路径
-    void downLoad();
-    QNetworkReply* downLoadReply;
-    bool isDownloadReplyBusy;
 
-    //返回下载链接
-    void getUrl();
-    QNetworkReply* urlReply ;
-    //存储请求的文件类型
-    RequestType requestType;
-    bool isUrlReplyBusy;
+    QFile output;
 
-    void getSongId();
-    QNetworkReply* songIdReply ;
-    bool isSongIdReplyBusy;
-
-    QString m; //music
-    QString s; //singer
-    QString songId;
-    QString downloadUrl; //歌曲，歌词，封面的下载链接；
-    QString p; //path
-    QString fn;//file name;完整路径
-
-
-
-
-    //songId请求次数,默认最大50次
-    int songIdRequestTimes;
-
-    bool isCanceled;
-
-    bool isUrlGotten;
-
-    bool isDownloaded;
-
-    bool isSongIdGotten;
-
-
-
-    QFile* file;
-
-
+    QStack<InputObj> stack;
 };
 
 #endif // NETWORK_H

@@ -8,28 +8,31 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     lyric.cpp \
-    download.cpp \
-    playengine.cpp \
-    playlistmodel.cpp \
-    id3v1tags.cpp
+    id3v1tags.cpp \
+    playlist.cpp \
+    musicinfo.cpp \
+    network.cpp
 
 QTPLUGIN += dsengine qtmedia_audioengine
 
 OTHER_FILES += \
     qml/PlayerControler.qml \
-    qml/main.qml \
-    qml/PlaylistDelegate.qml \
     qml/LyricView.qml \
-    updatesummary.txt
+    updatesummary.txt \
+    qml/MainWindow.qml \
+    qml/TopBar.qml \
+    qml/PlaylistViewHeader.qml \
+    qml/PlaylistView.qml \
+    qml/DisplayRegion.qml
 
 RESOURCES += \
     res.qrc \
 
 HEADERS += \
     lyric.h \
-    download.h \
-    playengine.h \
-    playlistmodel.h \
     id3v1tags.h \
-    id3v1tagsdef.h
+    id3v1tagsdef.h \
+    playlist.h \
+    musicinfo.h \
+    network.h
 

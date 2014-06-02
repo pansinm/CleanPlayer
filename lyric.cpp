@@ -6,14 +6,28 @@ Lyric::Lyric(QObject *parent) :
     QObject(parent)
 {
 }
-void Lyric::loadFile(QString lyricFile){
 
-    QFile file(lyricFile);
+
+void Lyric::loadFile(const QString& lyricFile){
+
+    lyricList.clear();
+
+    qDebug()<<"lyric file name:"<<lyricFile;
+    if(lyricFile.isEmpty()){
+        return;
+    }
+    QString fileName;
+    QUrl url(lyricFile);
+    //判断是否为本地文件
+     fileName = url.isLocalFile() ? url.toLocalFile():lyricFile;
+
+    qDebug()<<"fileName:"<<fileName;
+
+    QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly)){
         return;
     }
-    //清空歌词
-    lyricList.clear();
+
     QString  line;
     while(!file.atEnd()){
         line=QString(file.readLine());
@@ -33,6 +47,8 @@ void Lyric::loadFile(QString lyricFile){
             qDebug()<<lyricLine->time<<lyricLine->lyric;
         }
     }
+    file.close();
+    qDebug()<<"fileLoaded";
 }
 QString Lyric::lyricAt(int i){
     if(i>=lyricList.count()||i<0)

@@ -23,6 +23,7 @@ ID3V1Tags::ID3V1Tags(const string fileName)
 
     setFile(fileName);
 }
+
 bool ID3V1Tags::setFile(const string fileName )
 {
     ifstream fin(fileName.c_str(),ios::binary);
@@ -34,15 +35,7 @@ bool ID3V1Tags::setFile(const string fileName )
     fin.seekg(-128,ios::end);
     fin.read(tagsInfo,sizeof(tagsInfo));
     fin.close();
-    if(isID3V1())
-    {
-        return true;
-    }
-    else
-    {
-        memset(tagsInfo,0,128);
-        return false;
-    }
+    return true;
 
 }
 

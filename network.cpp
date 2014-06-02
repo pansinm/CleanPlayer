@@ -1,8 +1,6 @@
 #include "network.h"
-#include<QFile>
 #include<QUrl>
-#include<QNetworkRequest>
-#include<QNetworkAccessManager>
+#include<QFile>
 #include<QJsonDocument>
 #include<QJsonObject>
 #include<QJsonValue>
@@ -12,333 +10,412 @@
 #include<QFileInfo>
 #include<QTime>
 #include<QByteArray>
-#include<QEventLoop>
-Network::Network(QObject *parent) :
-    QObject(parent)
+#include<QDir>
+//通过关键字查询,返回匹配的歌曲列表"1%"=关键字,"2%"="json"或"xml"
+const QString Api_getSongList="http://mp3.baidu.com/dev/api/?tn=getinfo&ct=0&ie=utf-8&word=%1&format=%2";
+
+//通过song_id获取歌曲/歌词下载地址,"1%"为Api_getSongList返回的"song_id"项
+const QString Api_getSong="http://ting.baidu.com/data/music/links?songIds=%1";
+
+const int MaxRequestTimes=20;
+
+ Network::Network(QObject *parent) :
+    QObject(parent),requestTimes(0)
 {
-    songIdRequestTimes=0;
-    isSongIdReplyBusy=false;
-    isSongIdGotten=false;
-    isCanceled=false;
-    isUrlReplyBusy=false;
-    isDownloadReplyBusy=false;
-    isUrlGotten=false;
-    isDownloaded=false;
-}
-
-QString Network::getFile(QString music,QString singer,RequestType fileType){
-    m=music;
-    s=singer;
-    requestType=fileType;
-    isDownloaded=false;
-    isUrlGotten=false;
-    isSongIdGotten=false;
-    getSongId();
-    getUrl();
-    downLoad();
-
-    qDebug()<<"fn"<<fn;
-    return fn;
 
 }
+void Network::getLyric(const QVariant& json){
+    qDebug()<<"Network::getLyric()"<<json;
 
-void Network::downLoad(){
-    qDebug()<<"downLoad()";
-    if(isDownloadReplyBusy)
-        return ;
-    isDownloadReplyBusy=true;
-    isDownloaded=false;
-    file=new QFile;
+    InputObj obj;
+    obj.jsonVar=json;
+    obj.fileType=Network::Lyric;
+    stack.push(obj);
+    if(reply==0){
+        startNext();
+    }
+}
 
-    QString pathStr=p;
+void Network::getSong(const QVariant& json){
 
-    qDebug()<<"//创建文件";
-    if(requestType==MP3){
-        file->setFileName(pathStr+m+QTime::currentTime().toString("zzz")+QString(".mp3"));
-        if(!file->open(QIODevice::WriteOnly)){
+    InputObj obj;
+    obj.jsonVar=json;
+    obj.fileType=Network::Song;
+    stack.push(obj);
+    if(reply==0){
+        startNext();
+    }
+}
+
+void Network::getPic(const QVariant& json){
+    qDebug()<<"getPic^";
+    InputObj obj;
+    obj.jsonVar=json;
+    obj.fileType=Network::Pic;
+    stack.push(obj);
+    if(reply==0){
+        startNext();
+    }
+}
+
+void Network::startNext(){
+    qDebug()<<"Network::startNext()";
+    //重置
+    if(stack.isEmpty()){
+        return;
+    }
+    emitJson.empty();
+    infoJson.empty();
+    linkJson.empty();
+    period=Network::RequestInfo;
+    currentRequestUrl=QUrl();
+
+    //出列
+    InputObj obj=stack.pop();
+    QJsonParseError jsonError;
+    qDebug()<<"\tobj.jsonVar:"<<obj.jsonVar.toString();
+    QJsonDocument jsonDoc=QJsonDocument::fromJson(obj.jsonVar.toByteArray(),&jsonError);
+    if(jsonError.error==QJsonParseError::NoError){
+        if(jsonDoc.isObject()){
+            QJsonObject jsonObj=jsonDoc.object();
+            if(jsonObj.contains("url")&&jsonObj.contains("title")){
+                //保存原始json
+                emitJson=jsonObj;
+                fileType=obj.fileType;
+                //构造链接url
+                QUrl url_getSongList=Api_getSongList.arg(jsonObj.value("title").toString(),"json");
+                qDebug()<<"Network:start():url_getSongList:"<<url_getSongList;
+                //请求
+                currentRequestUrl=url_getSongList;
+                request(url_getSongList);
+                return;
+            }
+        }
+    }
+    qDebug()<<"Network::startNext():satartNext()";
+    startNext();
+
+}
+void Network::request(const QUrl &url){
+
+    qDebug()<<"Network::request():"<<url;
+    //文件名
+    if(period==Network::Download){
+        QDir  dir=QDir(QDir::currentPath());
+        QString fileName;
+        if(fileType==Network::Song){
+            if(!dir.exists("song")){
+                dir.mkdir("song");
+            }
+            dir.cd("song");
+            QString f=infoJson.value("song").toString()+"-"
+                    +infoJson.value("singer").toString()
+                    +"."+linkJson.value("format").toString()+".tmp";
+
+            fileName=dir.filePath(f);
+
+        }
+        else if(fileType==Network::Lyric){
+            if(!dir.exists("lyric")){
+                dir.mkdir("lyric");
+            }
+            dir.cd("lyric");
+            QString s=url.toString();
+            int n=s.lastIndexOf("/");
+            int size=s.length();
+            //文件名
+            QString f=s.right(size-n-1)+".tmp";
+            fileName=dir.filePath(f);
+        }
+        else if(fileType==Network::Pic){
+            if(!dir.exists("pic")){
+                dir.mkdir("pic");
+            }
+            dir.cd("pic");
+            QString s=url.toString();
+            int n=s.lastIndexOf("/");
+            int size=s.length();
+            //文件名
+            QString f=s.right(size-n-1)+".tmp";
+            fileName=dir.filePath(f);
+        }
+
+        qDebug()<<"\tfileName"<<fileName;
+        if(fileName==""){
+            startNext();
+            return;
+        }
+        output.setFileName(fileName);
+        //如果文件打开失败
+        if(!output.open(QIODevice::WriteOnly)){
+            startNext();
             return;
         }
     }
+    reply=manager.get(QNetworkRequest(url));
 
-    else if(requestType==LYRIC){
-        int n=downloadUrl.lastIndexOf("/");
-        QString s=downloadUrl;
-        int size=s.length();
-        QString fileName=s.right(size-n+1);
-        file->setFileName(pathStr+m+fileName);
-        if(!file->open(QIODevice::WriteOnly)){
-            return;
-        }
-    }
-
-    else if(requestType==COVER){
-        int n=downloadUrl.lastIndexOf("/");
-        QString s=downloadUrl;
-        int size=s.length();
-        QString fileName=s.right(size-n-1);
-        qDebug()<<downloadUrl<<fileName;
-        file->setFileName(fileName);
-        file->open(QIODevice::WriteOnly);
-        qDebug()<<"//COVER";
-    }
-    qDebug()<<"//下载";
-    downLoadReply=manager.get(QNetworkRequest(QUrl(downloadUrl)));
-
-    QEventLoop eventLoop;
-    //connect(downLoadReply,SIGNAL(readyRead()),this,SLOT(downlaodReadyRead()));
-    connect(downLoadReply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
-    eventLoop.exec();
-    qDebug()<<"loop";
-    downloadFinished();
+    connect(reply,SIGNAL(finished()),this,SLOT(replyFinished()));
+    connect(reply,SIGNAL(readyRead()),this,SLOT(replyReadied()));
 
 }
 
-void Network::downlaodReadyRead(){
-    qDebug()<<"downloadReadyRead";
-    file->write(downLoadReply->readAll());
+void Network::replyReadied(){
+    if(period==Network::Download||output.isOpen()){
+        output.write(reply->readAll());
+    }
 }
 
-void Network::downloadFinished(){
-    qDebug()<<"dowloadFinished()";
-    isDownloadReplyBusy=false;
-    isDownloaded=true;
-    file->write(downLoadReply->readAll());
-    QString fileName=file->fileName();
-    if(requestType==MP3){
-        file->close();
-        if(file->open(QIODevice::ReadOnly)){
+void Network::replyFinished(){
 
-            //如果文件首行为“<html>”,则说明xcode错误，重新获取链接并下载；
-            QString s=file->readLine();
-            if(s=="<html>"){
-                qDebug()<<"xcode错误，重新下载";
-                file->close();
-                QFile::remove(fileName);
-                delete file;
-                file=0;
-                delete downLoadReply;
-                downLoadReply=0;
-                downLoad();
-                return;
-            }
-            file->close();
-        }
-        file->deleteLater();
+    qDebug()<<"Network::replyFinished():";
+    if(period==Network::RequestInfo){
 
-    }
-    qDebug()<<"下载完毕！";
-    fn=fileName;
-    downLoadReply->deleteLater();
-}
+        QJsonParseError jsonError;
+        //加载json数据
+        QJsonDocument parseDoc=QJsonDocument::fromJson(reply->readAll(),&jsonError);
+        if(jsonError.error==QJsonParseError::NoError){
 
-void Network::getUrl(){
-    qDebug()<<"下载完毕！";
-    //reply是否被占用
-    if(isUrlReplyBusy)
-        return;
-    isUrlReplyBusy=true;
-    //API:http://ting.baidu.com/data/music/links?songIds=<song_id>
-    QString url=QString("http://ting.baidu.com/data/music/links?songIds=")+songId;
-    urlReply=manager.get(QNetworkRequest(QUrl(url)));
+            //如果json是数组，且请求getSongId次数大于50则判断数组是否为空，如果为空，则重新请求数据
+            if(parseDoc.isArray()){
+                QJsonArray array=parseDoc.array();
+                int size=array.size();
+                /*
+                if(size<1){
+                    qDebug()<<"Network:replyFinished():无json数据,重新请求";
+                    if((++requestTimes)<=MaxRequestTimes){
 
-    QEventLoop eventLoop;
-    connect(urlReply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
-    eventLoop.exec();
-    urlReplyFinished();
-
-}
-
-void Network::urlReplyFinished(){
-    qDebug()<<"urlReplyFinished()";
-    isUrlReplyBusy=false;
-    isUrlGotten=true;
-    //取消响应；
-    if(isCanceled){
-        delete urlReply;
-        urlReply=NULL;
-        isCanceled=false;
-        return;
-    }
-
-    QJsonParseError jsonError;
-    qDebug()<<"//加载json数据";
-    QByteArray byteArray=urlReply->readAll();
-    QJsonDocument parseDoc=QJsonDocument::fromJson(byteArray,&jsonError);
-    qDebug()<<"//加载json数据完毕";
-    if(jsonError.error==QJsonParseError::NoError){
-         qDebug()<<"json无错误";
-        if(parseDoc.isObject()){
-            qDebug()<<"json is object";
-            QJsonObject obj=parseDoc.object();
-
-            //获取数据
-            QJsonObject data=obj.take("data").toObject();
-            QJsonArray ar=data.take("songList").toArray();
-            QJsonObject lstObj=ar.takeAt(0).toObject();
-
-            //获取歌曲
-            if(lstObj.contains("showLink")&&requestType==MP3){
-                if(lstObj.contains("format")&&lstObj.take("format").toString()=="mp3"){
-                    QString url=lstObj.take("showLink").toString();
-
-                    url.replace("\\","");
-                    downloadUrl=url;
-                    urlReply->deleteLater();
-                    urlReply=NULL;
-                    return;
-                }
-            }
-            //获取歌词
-            else if(lstObj.contains("lrcLink")&&requestType==LYRIC){
-                QString tag("http://ting.baidu.com");
-                QString url=lstObj.take("lrcLink").toString();
-                qDebug()<<"getUrl:"<<url;
-                url.replace("\\","");   //删除斜杠
-                downloadUrl=tag+url;
-                urlReply->deleteLater();
-                urlReply=NULL;
-                return;
-            }
-
-
-            else if(lstObj.contains("songPicSmall")&&requestType==COVER){
-                qDebug()<<"//获取封面";
-                QString url=lstObj.take("songPicSmall").toString();
-                url.replace("\\","");
-                downloadUrl=url;
-                delete urlReply;
-                urlReply->deleteLater();
-                return;
-            }
-
-        }
-    }
-
-    urlReply->deleteLater();
-
-}
-
-//设置路径
-bool Network::setPath(QString path){
-    QFileInfo info(path);
-    if(info.isDir()){
-        p=path;
-        return true;
-    }
-    return false;
-}
-
-//获取song_id;
-void Network::getSongId(){
-    isSongIdGotten=false;
-    //判断reply是否被占用
-    if(isSongIdReplyBusy){
-        return;
-    }
-    isSongIdReplyBusy=true;
-
-    //API:http://mp3.baidu.com/dev/api/?tn=getinfo&ct=0&ie=utf-8&word=<word>&format=<format>
-    QString url("http://mp3.baidu.com/dev/api/?tn=getinfo&ct=0&word=");
-    QString keyword=m+QString("&ie=utf-8&format=json");
-    url=url+keyword;
-    qDebug()<<"getSongId() url:"<<url;
-    songIdReply=manager.get(QNetworkRequest(QUrl(url)));
-
-    QEventLoop eventLoop;
-    connect(songIdReply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
-    eventLoop.exec();
-    songIdReplyFinished();
-    qDebug()<<"loop.quit()"<<url;
-
-}
-
-void Network::songIdReplyFinished(){
-    qDebug()<<"songIdReplyFinished()";
-
-
-    isSongIdReplyBusy=false;
-    isSongIdGotten=true;
-
-    //取消响应；
-    if(isCanceled){
-        delete songIdReply;
-        songIdReply=NULL;
-        songIdRequestTimes=0;
-        isCanceled=false;
-        return;
-    }
-
-    //该接口经常得不到数据，所以设定多请求几次；
-    //如果请求次数大于50，则songIdRequestTimes设为0，并返回
-    if(songIdRequestTimes>49){
-        delete songIdReply;
-        songIdReply=NULL;
-        songIdRequestTimes=0;
-        qDebug()<<"请求次数大于50";
-        return;
-
-    }
-
-    qDebug()<<"begin Load Json";
-    QJsonParseError jsonError;
-
-    //加载json数据
-    QJsonDocument parseDoc=QJsonDocument::fromJson(songIdReply->readAll(),&jsonError);
-    if(jsonError.error==QJsonParseError::NoError){
-
-        //如果json是数组，且请求getSongId次数大于50则判断数组是否为空，如果为空，则重新请求数据
-        if(parseDoc.isArray()){
-            QJsonArray array=parseDoc.array();
-            int size=array.size();
-            if(size<1){
-                delete songIdReply;
-                songIdReply=NULL;
-                getSongId();
-                //请求次数自加
-                songIdRequestTimes++;
-                return;
-            }
-
-
-            //匹配歌手,如果匹配成功则写入songId，否则默认第一项
-            for(int i=0;i<size;i++){
-                QJsonValue v=array.at(i);
-                QJsonObject obj=v.toObject();
-                if(obj.contains("singer")&&obj.contains("song_id")){
-                    QJsonValue value=obj.take("singer").toString();
-
-                    QString singer=value.toString();
-                    qDebug()<<"singer:"<<singer;
-                    if(singer==s&&singer!=""){
-                        songId=QString(obj.take("song_id").toString());
-                        //请求次数清零
-                        songIdRequestTimes=0;
-                        delete songIdReply;
-                        songIdReply=0;
+                        qDebug()<<"requestTimes"<<requestTimes;
+                        reply->deleteLater();
+                        request(currentRequestUrl);
                         return;
                     }
+                    else{
+                        reply->deleteLater();
+                        startNext();
+                        return;
+                    }
+
+                }
+                */
+                if(size>0){
+                    qDebug()<<"size:>0";
+                    //第一项写入infoJson
+                    QJsonValue value=array.at(0);
+                    infoJson=value.toObject();
+
+                    //匹配歌手,如果匹配成功则覆盖infoJson
+                    for(int i=0;i<size;i++){
+                        QJsonValue v=array.at(i);
+                        QJsonObject obj=v.toObject();
+                        if(obj.contains("singer")&&obj.contains("song_id")){
+                            QString singerStr=emitJson.value("artist").toString();
+                            QString singer=obj.value("singer").toString();
+                            if(singer==singerStr){
+                                qDebug()<<"Network:replyFinished():歌手匹配成功:"<<singer;
+                                infoJson=obj;
+                            }
+                        }
+                    }
+
+                    //判断文件类型，如果是图片，直接返回下载链接
+                    /*返回的图片路径有问题
+                    if(fileType==Network::Pic){
+
+                        QString s=infoJson.value("singerPicLarge").toString();
+                        if(s==""){
+                            s=infoJson.value("albumPicLarge").toString();
+                        }
+
+                        s.replace("//","");
+                        currentRequestUrl=QUrl(s);
+                        period=Network::Download;
+                        request(currentRequestUrl);
+                        requestTimes=0;
+                        reply->deleteLater();
+                        return;
+
+                    }
+
+                    else{
+                    */
+                    period=Network::RequestLink;
+                    QString url=Api_getSong.arg(infoJson.value("song_id").toString());
+                    requestTimes=0;
+                    currentRequestUrl=QUrl(url);
+                    delete reply;
+                    reply=0;
+                    request(currentRequestUrl);
+                    return;
+                    //}
                 }
             }
+        }
 
-            //默认第一项
-            QJsonObject obj2=array.at(0).toObject();
-            if(obj2.contains("song_id")){
-                QJsonValue value2=obj2.take("song_id").toString();
-                songId=QString(value2.toString());
-                songIdRequestTimes=0;
-                songIdReply->deleteLater();
+       //请求次数自加,超出范围则返回
+        if(requestTimes<MaxRequestTimes){
+            qDebug()<<"/t请求次数"<<requestTimes<<"<"<<MaxRequestTimes;
+            requestTimes++;
+            delete reply;
+            reply=0;
+            request(currentRequestUrl);
+            return;
+        }
+
+        //如果有误切requeTimes超过规定值，进行下一个下载
+        requestTimes=0;
+        delete reply;
+        reply=0;
+        startNext();
+        return;
+
+    }
+
+    else if(period==Network::RequestLink){
+        qDebug()<<"Network:replayFinished():Network::RequestLink:加载json数据";
+        QByteArray jsonArr=reply->readAll();
+        qDebug()<<"parseDoc:readAll"<<jsonArr;
+        QJsonParseError jsonError;
+        QJsonDocument parseDoc=QJsonDocument::fromJson(jsonArr,&jsonError);
+        qDebug()<<"parseDoc:";
+        if(jsonError.error==QJsonParseError::NoError){
+             qDebug()<<"\tNoError";
+            if(parseDoc.isObject()){
+                QJsonObject obj=parseDoc.object();
+                //获取数据
+                QJsonObject data=obj.value("data").toObject();
+                QJsonArray ar=data.value("songList").toArray();
+                QJsonObject lstObj=ar.at(0).toObject();
+
+                linkJson=lstObj;
+
+                QString url;
+
+                //歌曲链接
+                if(fileType==Network::Song){
+                    url=lstObj.value("showLink").toString();
+                    url.replace("\\","");
+                }
+                //歌词链接
+                else if(fileType==Network::Lyric){
+                    QString tag("http://ting.baidu.com");
+                    QString lrclink=lstObj.value("lrcLink").toString();
+                    lrclink.replace("\\","");   //删除斜杠
+                    //如果歌词不为空
+                    if(!lrclink.isEmpty()){
+                        url=tag+lrclink;
+                    }
+                }
+                else if(fileType==Network::Pic){
+                    //图片链接
+                    url=lstObj.value("songPicBig").toString();
+                    url.replace("\\","");
+
+                    /*
+                     * 有些图片url以这种形式出现：http://c.hiphotos.baidu.com/ting/pic/item/
+                     *http://qukufile2.qianqian.com/data2/pic/115427899/115427899.jpg.jpg
+                     *有些图片则是：
+                     *http://c.hiphotos.baidu.com/ting/pic/item/574e9258d109b3de2abe3f4fcebf6c81800a4c90.jpg
+                     *所以需要转换url
+                    */
+
+                    const QString flag="http://c.hiphotos.baidu.com/ting/pic/item/";
+                    if(url.indexOf(flag)>-1&&url.count("http")>1){
+                        int n=url.length();
+                        url=url.mid(flag.length(),n-flag.length()-4);
+                        qDebug()<<"图片url已转换——cover url:"<<url;
+                    }
+                }
+
+                qDebug()<<("\tNetwork::Download,开始下载……");
+                currentRequestUrl=QUrl(url);
+                period=Network::Download;
+                requestTimes=0;
+                delete reply;
+                reply=0;
+                request(currentRequestUrl);
                 return;
             }
+
         }
+
+        if(requestTimes<MaxRequestTimes){
+            qDebug()<<"/tReplyLink请求次数"<<requestTimes<<"<"<<MaxRequestTimes;
+            requestTimes++;
+            delete reply;
+            reply=0;
+            request(currentRequestUrl);
+            return;
+        }
+
+        requestTimes=0;
+        delete reply;
+        reply=0;
+        startNext();
+        return;
     }
-    songIdReply->deleteLater();
 
+
+    else if(period==Network::Download){
+        //qDebug()<<"reply.readAll"<<reply->readAll();
+
+        //如果文件未打开，则返回，下载下一个
+        if(!output.isOpen()){
+            requestTimes=0;
+            delete reply;
+            reply=0;
+            startNext();
+            return;
+        }
+
+        qDebug()<<"\tNetwork::Download,写入文件……";
+        output.close();
+        QString oldName=output.fileName();
+        QString newName=oldName.left(oldName.length()-4);
+        qDebug()<<"oldName"<<oldName;
+
+        //如果重复，则删除
+        QFile::remove(newName);
+        QFile::rename(oldName,newName);
+
+        //检查下载文件
+        output.setFileName(newName);
+        if(output.open(QIODevice::ReadOnly)){
+
+            //如果文件首行为“<html>”或空行，则重新下载；
+            QString s=output.readLine();
+
+            if(s=="<html>"&&requestTimes<MaxRequestTimes){
+                qDebug()<<"\t下载错误，重新下载";
+                output.close();
+                QFile::remove(newName);
+                requestTimes++;
+                period=Network::RequestLink;
+                delete reply;
+                reply=0;
+                currentRequestUrl=QUrl(Api_getSong.arg(infoJson.value("song_id").toString()));
+                request(currentRequestUrl);
+                return;
+            }
+            output.close();
+        }
+
+        emitJson.insert("artist",infoJson.value("singer"));
+        if(fileType==Network::Lyric){
+            emitJson.insert("lyric",QJsonValue(QUrl::fromLocalFile(newName).toString()));
+        }
+        else if(fileType==Network::Pic){
+            emitJson.insert("cover",QJsonValue(QUrl::fromLocalFile(newName).toString()));
+        }
+
+        QJsonDocument doc;
+        doc.setObject(emitJson);
+        QVariant var=doc.toJson(QJsonDocument::Compact);
+        emit succeeded(var);
+
+    }
+    requestTimes=0;
+    delete reply;
+    reply=0;
+    startNext();
 }
 
-
-void Network::cancel(){
-    isCanceled=true;
-    songIdReply->abort();
-    urlReply->abort();
-
-}

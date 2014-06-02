@@ -1,9 +1,12 @@
 <RCC>
     <qresource prefix="/qml">
-        <file>qml/main.qml</file>
         <file>qml/PlayerControler.qml</file>
-        <file>qml/PlaylistDelegate.qml</file>
         <file>qml/LyricView.qml</file>
+        <file>qml/MainWindow.qml</file>
+        <file>qml/TopBar.qml</file>
+        <file>qml/PlaylistViewHeader.qml</file>
+        <file>qml/PlaylistView.qml</file>
+        <file>qml/DisplayRegion.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/title.png</file>
@@ -14,5 +17,6 @@
         <file>image/sequence.png</file>
         <file>image/slider-point.png</file>
         <file>image/play.png</file>
+        <file>image/add.png</file>
     </qresource>
 </RCC>
