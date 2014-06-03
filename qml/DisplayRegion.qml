@@ -15,11 +15,31 @@ Rectangle {
         id: artist
         color:"#92bee8"
         anchors.bottom: cover.top
-        anchors.bottomMargin: 20
+        anchors.bottomMargin: 25
         anchors.left: cover.left
-        text:jsonObj.artist
+        text:jsonObj.artist==="" ? "未知歌手" : jsonObj.artist
         font.family: "微软雅黑"
         font.pointSize: 14
+        onTextChanged: {
+            if(text.length>10)
+                font.pointSize = 10;
+            else
+                font.pointSize = 14;
+        }
+    }
+
+    //默认封面
+    BorderImage
+    {
+        id:defaultcover
+        width: 160
+        height: 160
+        clip:true
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 60
+        source:"qrc:/image/image/defaultCover.png"
+
     }
 
     //封面
@@ -31,23 +51,11 @@ Rectangle {
         clip:true
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 70
+        anchors.topMargin: 60
         source:jsonObj.cover
 
     }
 
-    //标题
-    Text{
-        id: title
-        color:"#71addb"
-        anchors.bottom: parent.bottom
-        anchors.left: cover.left
-        text:jsonObj.title
-        font.family: "微软雅黑"
-        verticalAlignment: Text.AlignVCenter
-        styleColor: "#d1cbcb"
-        font.pointSize: 10
-    }
 
     Connections{
         target: playlist

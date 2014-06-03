@@ -64,12 +64,14 @@ private:
     //储存歌词及歌曲下载链接
     QJsonObject linkJson;
 
-    //用于发射信号succeeded();
+    //存储数据用于成功后发射;
     QJsonObject emitJson;
 
     int requestTimes;
 
     QUrl currentRequestUrl;
+
+    bool isNetRequestBusy;
 
     QNetworkAccessManager manager;
 

@@ -4,7 +4,15 @@ Rectangle {
     width: 220
     height: 300
     color:"#00000000"
+    radius: 5
     property real msec: 0
+
+    MouseArea{
+        anchors.fill: parent
+        hoverEnabled: true
+        onEntered:parent.color="#304d6557"
+        onExited: parent.color="#00000000"
+    }
 
     ListModel{
         id:lyricModel
@@ -31,13 +39,11 @@ Rectangle {
     }
     ListView{
         id:lyricView
-        spacing:5
-        width: 200
-        height: 300
         anchors.fill: parent
+        spacing:5
         model:lyricModel
         delegate: lyricDelegate
-
+        clip: true
         onCurrentItemChanged: NumberAnimation {
                         target: lyricView;
                         property: "contentY";
@@ -45,7 +51,6 @@ Rectangle {
                         duration: 200;
                         easing.type: Easing.InOutQuad
                     }
-
     }
     Lyric{
         id:lyric
@@ -57,7 +62,10 @@ Rectangle {
         interval: 30
         onTriggered:{
             msec+=30
-            lyricView.currentIndex=lyric.getLyric(player.position)
+            var i=lyric.getLyric(player.position);
+            if(i>0){
+                lyricView.currentIndex=i
+            }
         }
     }
 
@@ -77,7 +85,12 @@ Rectangle {
 
         }
 
-        onChanged:{
+
+    }
+
+    Connections{
+        target: root
+        onJsonObjChanged:{
             lyricModel.clear();
             lyric.loadFile(jsonObj.lyric);
             for(var i=0;i<lyric.lineCount();i++){
@@ -85,7 +98,6 @@ Rectangle {
             }
 
         }
-
     }
 
 

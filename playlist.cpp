@@ -147,6 +147,9 @@ void Playlist::replace(const int index,const QVariant json){
 
         }
     }
+    if(index==m_currentMediaIndex){
+        emit currentItemChanged();
+    }
     emit replaced(index);
     emit changed();
 }
@@ -184,10 +187,13 @@ void Playlist::sync(const QVariant json){
                 if(m_playlist.at(i)->lyric().isEmpty()){
                     m_playlist[i]->setLyric(QUrl(jsonObj.value("lyric").toString()));
                 }
-
+                if(i==m_currentMediaIndex){
+                    emit currentItemChanged();
+                }
                 emit synchronized();
                 emit changed();
             }
+
         }
 
     }
@@ -199,15 +205,17 @@ void Playlist::remove(const int index){
         return;
     }
     qDebug()<<"删除:index="<<index;
+
     m_playlist.removeAt(index);
 
     if(index<currentMediaIndex()){
         setCurrentMediaIndex(currentMediaIndex()-1);
     }
     else if(index==currentMediaIndex()){
-        setCurrentMediaIndex(currentMediaIndex()-1);
+        setCurrentMediaIndex(currentMediaIndex());
 
     }
+
     emit removed(index);
     emit changed();
     emit countChanged();
@@ -231,8 +239,6 @@ void Playlist::append(MusicInfo *info){
 }
 
 void Playlist::append(const QUrl& fileUrl){
-
-
 
     //判断文件是否重复
     for(int i=0;i<m_playlist.count();i++){

@@ -1,9 +1,10 @@
 import QtQuick 2.0
-
+import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 Rectangle {
     width: 180
     height: 320
-    color:"#00000000"
+    color:"#503d5869"
     ListModel{
         id:playlistModel
     }
@@ -16,18 +17,18 @@ Rectangle {
             height:30
 
             radius:3
-            border.color: "#90909090"
+            //border.color: "#90909090"
 
             gradient: Gradient {
                 GradientStop {
                     id:topColor
                     position: 0.00;
-                    color:"#906d7e79"
+                    color:"#00000000"
                 }
                 GradientStop {
                     id:bottomColor
                     position: 1.00;
-                    color: "#906d7e79"
+                    color: "#00000000"
                 }
             }
 
@@ -38,11 +39,11 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                color:wraper.ListView.isCurrentItem ? "white":"black"
+                color:wraper.ListView.isCurrentItem ? "white":"#80a89f"
                 text:title
                 font.family: "微软雅黑"
                 font.pointSize: 8
-                styleColor: "black"
+                styleColor: "#80a89f"
                 verticalAlignment: Text.AlignVCenter
 
             }
@@ -51,17 +52,16 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 onEntered: {
-                    topColor.color="#ddfbf8";
-                    bottomColor.color="#a7f3ec";
+                    topColor.color="#90ddfbf8";
+                    bottomColor.color="#90a7f3ec";
                     removeBtn.visible=true;
                 }
                 onExited: {
-                    topColor.color="#906d7e79";
-                    bottomColor.color="#906d7e79";
+                    topColor.color="#00000000";
+                    bottomColor.color="#00000000";
                     removeBtn.visible=false;
-
                 }
-                onDoubleClicked:{
+                onClicked:{
                     playlist.setCurrentMediaIndex(index);
                     player.play();
                 }
@@ -69,26 +69,27 @@ Rectangle {
 
             Rectangle{
                 id:removeBtn
-                height: 26
-                width: 48
-                radius:3
+                height: 24
+                width: 24
+                radius:12
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
-                anchors.rightMargin: 3
+                anchors.rightMargin: 10
                 visible: false
                 gradient: Gradient {
                     GradientStop {
                         position: 0.00;
-                        color: "#e6b5b6";
+                        color: "#f39a9a";
                     }
                     GradientStop {
                         position: 1.00;
-                        color: "#f55c5c";
+                        color: "#fb7171";
                     }
                 }
                 Text{
                     anchors.fill: parent
-                    text:"移除"
+                    text:"x"
+                    font.family: "微软雅黑"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     styleColor: "#b59d9d"
@@ -134,20 +135,76 @@ Rectangle {
 
         }
     }
+    ScrollView{
 
-    ListView{
-        id:playlistView
         anchors.fill: parent
-        clip: true
-        focus: true
-        model:playlistModel
-        delegate: playlistDelegate
-        highlight:highlight
-        highlightFollowsCurrentItem: true
-        highlightMoveDuration:150
 
+
+        ListView{
+
+            id:playlistView
+            anchors.fill: parent
+            clip: true
+            focus: true
+            model:playlistModel
+            delegate: playlistDelegate
+            highlight:highlight
+            highlightFollowsCurrentItem: true
+            highlightMoveDuration:150
+
+        }
+
+        style: ScrollViewStyle{
+            handleOverlap:0
+            minimumHandleLength : 20
+            handle : Rectangle{
+                //color: "#f08080"
+                implicitWidth: 10
+                //implicitHeight: 20
+                radius:2
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.00;
+                        color: "#6995b1";
+                    }
+                    GradientStop {
+                        position: 0.50;
+                        color: "#5780a6";
+                    }
+                    GradientStop {
+                        position: 1.00;
+                        color: "#6995b1";
+                    }
+                }
+
+                }
+            decrementControl :Rectangle{
+                color:"#803d5869"
+                implicitWidth: 10
+                implicitHeight: 10
+            }
+            incrementControl :Rectangle{
+                color:"#803d5869"
+                implicitWidth: 10
+                implicitHeight: 0
+            }
+            scrollBarBackground :Rectangle{
+                implicitWidth: 10
+                implicitHeight: 150
+                color:"#803d5869"
+                GradientStop {
+                    position: 0.00;
+                    color: "#803d5869";
+                }
+                GradientStop {
+                    position: 1.00;
+                    color: "#802f4c62";
+                }
+            }
+
+
+        }
     }
-
     Connections{
         target: playlist
         onCleared:{
@@ -173,5 +230,7 @@ Rectangle {
             playlistView.currentIndex=playlist.currentMediaIndex();
         }
     }
+
+
 
 }

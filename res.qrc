@@ -14,9 +14,16 @@
         <file>image/next.png</file>
         <file>image/pause.png</file>
         <file>image/previous.png</file>
-        <file>image/sequence.png</file>
         <file>image/slider-point.png</file>
         <file>image/play.png</file>
         <file>image/add.png</file>
+        <file>image/volume-high-icon.png</file>
+        <file>image/volume-low-icon.png</file>
+        <file>image/volume-medium-icon.png</file>
+        <file>image/volume-mute-icon.png</file>
+        <file>image/random.png</file>
+        <file>image/sequence.png</file>
+        <file>image/defaultCover.png</file>
+        <file>image/defaulBkg.png</file>
     </qresource>
 </RCC>

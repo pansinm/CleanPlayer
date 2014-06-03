@@ -7,7 +7,6 @@ Lyric::Lyric(QObject *parent) :
 {
 }
 
-
 void Lyric::loadFile(const QString& lyricFile){
 
     lyricList.clear();
@@ -31,25 +30,54 @@ void Lyric::loadFile(const QString& lyricFile){
     QString  line;
     while(!file.atEnd()){
         line=QString(file.readLine());
-        line=line.replace(" ","");
-        QRegExp rx("\\[(\\d+):(\\d+).(\\d+)\\](.*)");
-        int pos=rx.indexIn(line);
-        if(pos>-1){
-            int min=rx.cap(1).toInt();
-            int sec=rx.cap(2).toInt();
-            int mse=rx.cap(3).toInt();//实际为1%秒
-            QString lyricStr=rx.cap(4);
-            qint64 appearTime=(min*60+sec)*1000+mse*10;
-            LyricLine* lyricLine=new LyricLine;
-            lyricLine->time=appearTime;
-            lyricLine->lyric=lyricStr;
-            lyricList.append(lyricLine);
-            qDebug()<<lyricLine->time<<lyricLine->lyric;
-        }
+        parseLyricLine(line);
+
     }
+    sort();
     file.close();
     qDebug()<<"fileLoaded";
 }
+
+//解析歌词，支持单行多时段
+void Lyric::parseLyricLine(const QString& line){
+    QRegExp rx("\\[(\\d+):(\\d+).(\\d+)\\](.*)");
+    int pos=rx.indexIn(line);
+
+    if(pos>-1){
+        int min=rx.cap(1).toInt();
+        int sec=rx.cap(2).toInt();
+        int mse=rx.cap(3).toInt();//实际为1%秒
+        qint64 appearTime=(min*60+sec)*1000+mse*10;
+        times.push(appearTime);
+
+        //递归解析
+        QString lyricStr=rx.cap(4);
+        qDebug()<<"parse lyric:"<<lyricStr;
+        parseLyricLine(lyricStr);
+    }
+
+
+    while(!times.isEmpty()){
+        LyricLine* lyricLine=new LyricLine;
+        lyricLine->time=times.pop();
+        lyricLine->lyric=line;
+        qDebug()<<lyricLine->time<<line;
+        lyricList.append(lyricLine);
+    }
+}
+
+//歌词按时间排序
+void Lyric::sort(){
+    int n=lyricList.count();
+    for(int i=0;i<n;i++){
+        for(int j=n-1;j>i;j--){
+            if(lyricList.at(i)->time>lyricList.at(j)->time){
+                lyricList.swap(i,j);
+            }
+        }
+    }
+}
+
 QString Lyric::lyricAt(int i){
     if(i>=lyricList.count()||i<0)
         return QString();
@@ -79,3 +107,4 @@ int Lyric::getLyric(qint64 queryTime){
 QList<LyricLine*> Lyric::getLyricList(){
     return lyricList;
 }
+

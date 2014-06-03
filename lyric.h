@@ -5,6 +5,7 @@
 #include<QString>
 #include<QUrl>
 #include<QList>
+#include<QStack>
 struct LyricLine{
     qint64 time;
     QString lyric;
@@ -30,6 +31,9 @@ signals:
 public slots:
 
 private:
+    void parseLyricLine(const QString& line);
+    void sort();
+    QStack<qint64> times;
     QList<LyricLine*> lyricList;
 
 };

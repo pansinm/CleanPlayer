@@ -11,6 +11,7 @@
 class Playlist:public QObject
 {
     Q_OBJECT
+     Q_ENUMS(PlayMode)
 public:
     Playlist(QObject* parent=0);
     enum PlayMode{Sequence,Random};
@@ -89,6 +90,10 @@ signals:
     void appended();
     void countChanged();
     void currentMediaIndexChanged();
+
+    //当前条目信息改变，不包括index改变
+    void currentItemChanged();
+
 private:
     QList<MusicInfo*> m_playlist;
     int m_currentMediaIndex;

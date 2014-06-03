@@ -38,6 +38,12 @@ Rectangle {
        GradientStop { position: 1; color:  "#FF141414" }
     }
 
+    Image{
+        id:bakgroundImg
+        anchors.fill: parent
+        source: "qrc:/image/image/defaulBkg.png"
+    }
+
    //拖拽
     MouseArea {
         id: dragRegion
@@ -45,10 +51,9 @@ Rectangle {
         property point clickPos: "0,0"
         onPressed: {
             clickPos  = Qt.point(mouse.x,mouse.y)
-            }
+         }
 
         onPositionChanged: {
-
         //鼠标偏移量
         var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y)
 
@@ -62,13 +67,12 @@ Rectangle {
     Playlist{
         id:playlist
 
-        onChanged:{
+        onCurrentItemChanged:{
             jsonObj=JSON.parse(playlist.at(playlist.currentMediaIndex()));
-            //console.log("json STRING:"+jsonObj.toJSONString());
-            console.log(playlist.at(playlist.currentMediaIndex()));
         }
 
         onCurrentMediaIndexChanged: {
+            console.log("jsonObj");
             jsonObj=JSON.parse(playlist.at(playlist.currentMediaIndex()));
             player.play();
         }
@@ -132,14 +136,14 @@ Rectangle {
         id:listViewTopBar
         anchors.top: topBar.bottom
         anchors.right: parent.right
-        anchors.topMargin: 5
-        anchors.rightMargin: 30
+        anchors.topMargin: 15
+        anchors.rightMargin: 15
     }
 
     PlaylistView{
         id:playlistRegion
         anchors.right: parent.right
-        anchors.rightMargin: 30
+        anchors.rightMargin: 15
         anchors.top: listViewTopBar.bottom
         //anchors.topMargin: 5
     }

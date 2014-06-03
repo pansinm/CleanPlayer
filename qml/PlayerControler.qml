@@ -2,12 +2,11 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
-
+import MyComponents 1.0
 Rectangle {
     color:"#00000000"
     width: parent.width
-    anchors.top: displayRegion.bottom
-    anchors.topMargin: -90
+    height: 190
     anchors.left: parent.left
     anchors.bottom: parent.bottom
 
@@ -21,12 +20,117 @@ Rectangle {
         return num;
     }
 
+    Rectangle{
+        id:volumeControler
+        height: 32
+        width:140
+        x:40
+        anchors.top: parent.top
+        color:"#00000000"
+        Rectangle{
+            id:volumeImgResion
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            width: 32
+            height: parent.height
+            color: "#00000000"
+            Image{
+                id:volumeImg
+                width: 24
+                height: 24
+                anchors.fill: parent
+                source: "qrc:/image/image/volume-medium-icon.png"
+            }
+            MouseArea{
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: parent.color="#50505080"
+                onExited: parent.color="#00000000"
+                onClicked: {
+                    player.muted=!player.muted
+                }
+            }
+        }
+
+        Slider{
+            id:volumeSlider
+            anchors.left: volumeImgResion.right
+            anchors.leftMargin: 3
+            anchors.verticalCenter: volumeImgResion.verticalCenter
+            height: 10
+            width: 100
+            maximumValue:1.0
+            minimumValue: 0
+            value: 0.7
+            stepSize:0.02
+            onValueChanged: {
+                player.volume=value
+                setSource();
+                if(player.muted){
+                    player.muted=false;
+                }
+            }
+
+            style: SliderStyle {
+                groove: Rectangle {
+                    implicitWidth: 100
+                    implicitHeight: 2
+                    color: "white"
+                    radius: 1
+                }
+                handle: Rectangle {
+                    width: 8
+                    height: 8
+                    radius: 4
+                    color:"white"
+
+                }
+            }
+
+
+
+            function setSource(){
+                if(value>0.8){
+                    volumeImg.source="qrc:/image/image/volume-high-icon.png";
+                }
+                else if(value>0.45){
+                    volumeImg.source="qrc:/image/image/volume-medium-icon.png";
+                }
+                else if(value>0){
+                    volumeImg.source="qrc:/image/image/volume-low-icon.png"
+                }
+                else if(value===0){
+                    volumeImg.source="qrc:/image/image/volume-mute-icon.png";
+                }
+            }
+
+
+
+        }
+
+        Connections{
+            target: player
+            onMutedChanged:{
+                if(player.muted){
+                    volumeImg.source="qrc:/image/image/volume-mute-icon.png";
+                }
+                else{
+                   volumeSlider.value=player.volume;
+                    volumeSlider.setSource();
+                }
+            }
+        }
+
+
+
+    }
+
     //播放按钮
     Rectangle{
         id:playBtn
-        x:displayRegion.x+(displayRegion.width-width)/2
-        anchors.top: displayRegion.bottom
-        anchors.topMargin: 30
+        x:80
+        anchors.top: volumeControler.bottom
+        anchors.topMargin: 10
         width:  66
         height: 66
         radius: 33
@@ -144,11 +248,114 @@ Rectangle {
 
     }
 
+    //标题
+    Text{
+        id: title
+        color:"#71addb"
+        anchors.bottom: slider.top
+        anchors.bottomMargin: 3
+        anchors.left: volumeControler.left
+        anchors.leftMargin: -10
+        text:jsonObj.title
+        font.family: "微软雅黑"
+        verticalAlignment: Text.AlignVCenter
+        styleColor: "#d1cbcb"
+        font.pointSize: 10
+    }
+
+
+    Rectangle{
+        id:playMode
+        width: 80
+        height: 24
+        radius: 3
+        anchors.right: slider.right
+        anchors.bottom: slider.top
+        anchors.rightMargin: 5
+        anchors.bottomMargin:  5
+        color: "grey"
+        //是否随机播放
+        property bool random: false
+        states:[State{
+            name:"sequenceState"
+            PropertyChanges {
+                target: handleBtn
+                anchors.leftMargin: 0
+
+            }
+            },
+            State{
+            name:"randomState"
+            PropertyChanges{
+                target:handleBtn
+                anchors.leftMargin: 40
+
+            }
+            }]
+
+        Image {
+            id:sequenceImg
+            width: 40
+            height: 24
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/image/image/sequence.png"
+        }
+
+
+        Image{
+            id:randomBtnImg
+            width: 40
+            height: 24
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/image/image/random.png"
+        }
+
+
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                if(playMode.random){
+                    playMode.state="sequenceState";
+                    playlist.setPlayMode(Playlist.Sequence)
+                }
+                else{
+                    playlist.setPlayMode(Playlist.Random)
+                    playMode.state="randomState";
+                }
+                playMode.random=!playMode.random
+            }
+        }
+
+        Rectangle{
+            id:handleBtn
+            width: 40
+            height: 24
+            radius: 3
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            GradientStop {
+                position: 0.00;
+                color: "#ffffff";
+            }
+            GradientStop {
+                position: 1.00;
+                color: "#ececec";
+            }
+        }
+
+
+    }
+
     //进度条
     Slider {
         id:slider
         x:15
-        y:parent.height-55
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 30
         maximumValue:0
         value: 0
         stepSize:1.0
@@ -169,7 +376,6 @@ Rectangle {
                     anchors.centerIn: parent
                     source: "qrc:/image/image/slider-point.png"
                 }
-
             }
         }
         onValueChanged: {
@@ -197,7 +403,7 @@ Rectangle {
         id:currentPosition_txt
         anchors.left: slider.left
         anchors.top: slider.bottom
-        anchors.topMargin: 8
+        anchors.topMargin: 3
         color:"#828282"
         text:"00:00"
     }
@@ -207,7 +413,7 @@ Rectangle {
         id:musicLength_txt
         anchors.right: slider.right
         anchors.top: slider.bottom
-        anchors.topMargin: 8
+        anchors.topMargin: 3
         color:"#828282"
         text:"00:00"
     }

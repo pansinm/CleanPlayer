@@ -11,16 +11,16 @@
 #include<QTime>
 #include<QByteArray>
 #include<QDir>
-//通过关键字查询,返回匹配的歌曲列表"1%"=关键字,"2%"="json"或"xml"
+//通过关键字查询,返回匹配的歌曲列表"%1"=关键字,"%2"="json"或"xml"
 const QString Api_getSongList="http://mp3.baidu.com/dev/api/?tn=getinfo&ct=0&ie=utf-8&word=%1&format=%2";
 
-//通过song_id获取歌曲/歌词下载地址,"1%"为Api_getSongList返回的"song_id"项
+//通过song_id获取歌曲/歌词下载地址,"%1"为Api_getSongList返回的"song_id"项
 const QString Api_getSong="http://ting.baidu.com/data/music/links?songIds=%1";
 
 const int MaxRequestTimes=20;
 
  Network::Network(QObject *parent) :
-    QObject(parent),requestTimes(0)
+    QObject(parent),requestTimes(0),isNetRequestBusy(false)
 {
 
 }
@@ -31,7 +31,7 @@ void Network::getLyric(const QVariant& json){
     obj.jsonVar=json;
     obj.fileType=Network::Lyric;
     stack.push(obj);
-    if(reply==0){
+    if(!isNetRequestBusy){
         startNext();
     }
 }
@@ -42,7 +42,7 @@ void Network::getSong(const QVariant& json){
     obj.jsonVar=json;
     obj.fileType=Network::Song;
     stack.push(obj);
-    if(reply==0){
+    if(!isNetRequestBusy){
         startNext();
     }
 }
@@ -53,25 +53,33 @@ void Network::getPic(const QVariant& json){
     obj.jsonVar=json;
     obj.fileType=Network::Pic;
     stack.push(obj);
-    if(reply==0){
+    if(!isNetRequestBusy){
         startNext();
     }
 }
 
 void Network::startNext(){
     qDebug()<<"Network::startNext()";
-    //重置
-    if(stack.isEmpty()){
-        return;
-    }
+
+    //成员重置
     emitJson.empty();
     infoJson.empty();
     linkJson.empty();
     period=Network::RequestInfo;
     currentRequestUrl=QUrl();
 
+    //栈空，返回
+    if(stack.isEmpty()){
+        isNetRequestBusy=false;
+        return;
+    }
+
+    isNetRequestBusy=true;
+
     //出列
     InputObj obj=stack.pop();
+
+    //解析json数据
     QJsonParseError jsonError;
     qDebug()<<"\tobj.jsonVar:"<<obj.jsonVar.toString();
     QJsonDocument jsonDoc=QJsonDocument::fromJson(obj.jsonVar.toByteArray(),&jsonError);
@@ -151,11 +159,12 @@ void Network::request(const QUrl &url){
             startNext();
             return;
         }
-    }
+    } 
     reply=manager.get(QNetworkRequest(url));
-
     connect(reply,SIGNAL(finished()),this,SLOT(replyFinished()));
     connect(reply,SIGNAL(readyRead()),this,SLOT(replyReadied()));
+
+    qDebug()<<"Network::request():"<<"request over";
 
 }
 
@@ -261,7 +270,7 @@ void Network::replyFinished(){
             return;
         }
 
-        //如果有误切requeTimes超过规定值，进行下一个下载
+        //如果有误且requeTimes超过规定值，进行下一个下载
         requestTimes=0;
         delete reply;
         reply=0;
@@ -388,7 +397,14 @@ void Network::replyFinished(){
                 qDebug()<<"\t下载错误，重新下载";
                 output.close();
                 QFile::remove(newName);
-                requestTimes++;
+                if((++requestTimes)>MaxRequestTimes){
+                    requestTimes=0;
+                    delete reply;
+                    reply=0;
+                    startNext();
+                    return;
+                }
+
                 period=Network::RequestLink;
                 delete reply;
                 reply=0;
@@ -410,7 +426,9 @@ void Network::replyFinished(){
         QJsonDocument doc;
         doc.setObject(emitJson);
         QVariant var=doc.toJson(QJsonDocument::Compact);
-        emit succeeded(var);
+        if(!var.isNull()){
+            emit succeeded(var);
+        }
 
     }
     requestTimes=0;

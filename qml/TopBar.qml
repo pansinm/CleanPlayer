@@ -4,20 +4,26 @@ Rectangle {
     anchors.top: parent.top
     anchors.left: parent.left
     width: parent.width
-    height: 50
+    height: 36
     color:"#00000000"
 
     //标题
-    Image{
-        y:10
-        anchors.horizontalCenter: parent.horizontalCenter
-        source: "qrc:/image/image/title.png"
+
+    Text{
+
+        anchors.centerIn: parent
+        color: "#999898"
+       text:"Clean Player"
+        font.family: "微软雅黑"
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        font.pointSize: 12
     }
 
     Rectangle{
         id:fineLine
         x:0
-        y:48
+        y:30
         width: parent.width
         height: 1
         color:"#FF828282"
@@ -26,10 +32,11 @@ Rectangle {
     //关闭按钮
     Rectangle {
         id:closeBtn
-        x: parent.width-43
-        y:10
-        height: 30
-        width: 30
+        anchors.right: parent.right
+        anchors.rightMargin: 5
+        anchors.verticalCenter: parent.verticalCenter
+        height: 25
+        width: 25
         radius:8
         color:"#00000000"
         Image {

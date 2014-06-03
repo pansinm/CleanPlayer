@@ -298,7 +298,6 @@ string ID3V1Tags::removeEndOfSpace(string str)
            //cout<<i;
         }
         else break;
-
     }
 
     return s;

@@ -5,7 +5,10 @@ Rectangle {
     height: 24
     width: 180
     radius: 3
-    color:"#6d7e79"
+    color:"#b1b7b5"
+
+
+
     Text{
         anchors.centerIn: parent
         color: "#ffffff"
@@ -15,6 +18,9 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
     }
+
+
+
     Rectangle{
         id:addMusicBtn
         width: 24
@@ -47,8 +53,6 @@ Rectangle {
                 addTxt.color="lightgray"
             }
             onClicked: fileDialog.open()
-
         }
     }
-
 }
