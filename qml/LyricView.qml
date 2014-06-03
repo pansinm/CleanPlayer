@@ -24,7 +24,7 @@ Rectangle {
         Rectangle{
             id:lyricLineRect
             height: 20
-            width: 200
+            width: parent.parent.width
             color:"#00000000"
             Text{
                 anchors.centerIn: parent
@@ -39,7 +39,10 @@ Rectangle {
     }
     ListView{
         id:lyricView
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
+        anchors.top: parent.top
+        anchors.left: parent.left
         spacing:5
         model:lyricModel
         delegate: lyricDelegate

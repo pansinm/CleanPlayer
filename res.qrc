@@ -25,5 +25,8 @@
         <file>image/sequence.png</file>
         <file>image/defaultCover.png</file>
         <file>image/defaulBkg.png</file>
+        <file>image/down.png</file>
+        <file>image/up.png</file>
+        <file>image/bkg2.jpg</file>
     </qresource>
 </RCC>

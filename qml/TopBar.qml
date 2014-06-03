@@ -7,13 +7,11 @@ Rectangle {
     height: 36
     color:"#00000000"
 
-    //标题
-
+    //程序标题
     Text{
-
         anchors.centerIn: parent
         color: "#999898"
-       text:"Clean Player"
+        text:"Clean Player"
         font.family: "微软雅黑"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
@@ -23,7 +21,7 @@ Rectangle {
     Rectangle{
         id:fineLine
         x:0
-        y:30
+        anchors.bottom: parent.bottom
         width: parent.width
         height: 1
         color:"#FF828282"

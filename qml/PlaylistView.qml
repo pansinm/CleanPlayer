@@ -4,7 +4,7 @@ import QtQuick.Controls.Styles 1.1
 Rectangle {
     width: 180
     height: 320
-    color:"#503d5869"
+    color:"#50b2b6b9"
     ListModel{
         id:playlistModel
     }
@@ -15,9 +15,10 @@ Rectangle {
             id:wraper
             width:180
             height:30
-
             radius:3
+
             //border.color: "#90909090"
+            property bool isEntered: false
 
             gradient: Gradient {
                 GradientStop {
@@ -33,13 +34,14 @@ Rectangle {
             }
 
             Text{
+                id:titleTxt
                 anchors.left: parent.left
                 anchors.leftMargin: 5
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                color:wraper.ListView.isCurrentItem ? "white":"#80a89f"
+                color:wraper.ListView.isCurrentItem? "white":"lightGrey"
                 text:title
                 font.family: "微软雅黑"
                 font.pointSize: 8
@@ -49,17 +51,21 @@ Rectangle {
             }
 
             MouseArea{
+                id:mouseArea
                 anchors.fill: parent
                 hoverEnabled: true
                 onEntered: {
-                    topColor.color="#90ddfbf8";
-                    bottomColor.color="#90a7f3ec";
+                    topColor.color= "#90c6d6dd";;
+                    bottomColor.color="#90aac1c8";
                     removeBtn.visible=true;
+                    titleTxt.color="white"
+                    wraper.isEntered=true
                 }
                 onExited: {
                     topColor.color="#00000000";
                     bottomColor.color="#00000000";
                     removeBtn.visible=false;
+                    wraper.isEntered=false
                 }
                 onClicked:{
                     playlist.setCurrentMediaIndex(index);
@@ -72,6 +78,8 @@ Rectangle {
                 height: 24
                 width: 24
                 radius:12
+                border.width: 1
+                border.color: "grey"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 10
@@ -79,11 +87,11 @@ Rectangle {
                 gradient: Gradient {
                     GradientStop {
                         position: 0.00;
-                        color: "#f39a9a";
+                        color: "#80f39a9a";
                     }
                     GradientStop {
                         position: 1.00;
-                        color: "#fb7171";
+                        color: "#80fb7171";
                     }
                 }
                 Text{
@@ -102,9 +110,11 @@ Rectangle {
                     }
                 }
             }
+
+
             ListView.onAdd: SequentialAnimation {
                 PropertyAction { target: wraper; property: "height"; value: 0 }
-                NumberAnimation { target: wraper; property: "height"; to: 30; duration: 250; easing.type: Easing.InOutQuad }
+                NumberAnimation { target: wraper; property: "height"; to: 30; duration: 50; easing.type: Easing.InOutQuad }
             }
             ListView.onRemove: SequentialAnimation {
                 PropertyAction { target: wraper; property: "ListView.delayRemove"; value: true }
@@ -125,25 +135,25 @@ Rectangle {
             gradient: Gradient {
                 GradientStop {
                     position: 0.00;
-                    color: "#a9ccf3";
+                    color: "#80a9ccf3";
                 }
                 GradientStop {
                     position: 1.00;
-                    color: "#579ff1";
+                    color: "#808abae6";
                 }
             }
 
         }
     }
     ScrollView{
-
-        anchors.fill: parent
-
-
+        width: parent.width
+        height: parent.height
+        anchors.centerIn: parent
         ListView{
-
             id:playlistView
-            anchors.fill: parent
+            width: parent.width
+            height: parent.height
+            anchors.centerIn: parent
             clip: true
             focus: true
             model:playlistModel

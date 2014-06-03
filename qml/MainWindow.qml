@@ -41,7 +41,8 @@ Rectangle {
     Image{
         id:bakgroundImg
         anchors.fill: parent
-        source: "qrc:/image/image/defaulBkg.png"
+        fillMode: Image.Stretch
+        source: "qrc:/image/image/bkg2.jpg"
     }
 
    //拖拽
@@ -110,6 +111,7 @@ Rectangle {
         id: fileDialog
         selectMultiple:true
         title: "选择音乐"
+        nameFilters: [ "音乐文件 (*.mp3 *.wma)", "所有文件 (*)" ]
         onAccepted:{
             var arrUrls=new Array
             arrUrls=fileUrls
@@ -123,7 +125,9 @@ Rectangle {
 
     LyricView{
         id:lyricView
-        anchors.centerIn: parent
+        anchors.top:listViewTopBar.bottom
+        anchors.topMargin: 15
+        anchors.left: displayRegion.right
     }
 
     //顶栏
@@ -173,7 +177,7 @@ Rectangle {
     */
    Component.onCompleted:{
        playlist.load("playlist.xml")
-       player.stop();
+       //player.stop();
        console.log("completed")
    }
 }
