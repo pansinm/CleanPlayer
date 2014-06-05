@@ -1,4 +1,4 @@
-#include "network.h"
+ #include "network.h"
 #include<QUrl>
 #include<QFile>
 #include<QJsonDocument>
@@ -70,6 +70,7 @@ void Network::startNext(){
 
     //栈空，返回
     if(stack.isEmpty()){
+        emit allDownloaded();
         isNetRequestBusy=false;
         return;
     }
@@ -105,6 +106,10 @@ void Network::startNext(){
 
 }
 void Network::request(const QUrl &url){
+    if(url.isEmpty()||!url.isValid()){
+        startNext();
+        return;
+    }
 
     qDebug()<<"Network::request():"<<url;
     //文件名
@@ -382,7 +387,7 @@ void Network::replyFinished(){
         QString newName=oldName.left(oldName.length()-4);
         qDebug()<<"oldName"<<oldName;
 
-        //如果重复，则删除
+        //如果有重复，则删除
         QFile::remove(newName);
         QFile::rename(oldName,newName);
 
@@ -393,10 +398,12 @@ void Network::replyFinished(){
             //如果文件首行为“<html>”或空行，则重新下载；
             QString s=output.readLine();
 
+            //请求歌曲时，附带xcode，如果超时，请求到的是一个html页面
             if(s=="<html>"&&requestTimes<MaxRequestTimes){
                 qDebug()<<"\t下载错误，重新下载";
                 output.close();
                 QFile::remove(newName);
+
                 if((++requestTimes)>MaxRequestTimes){
                     requestTimes=0;
                     delete reply;
@@ -414,11 +421,15 @@ void Network::replyFinished(){
             }
             output.close();
         }
+        //如果singer不为空值
+        if(!infoJson.value("singer").toString().isEmpty()){
+                emitJson.insert("artist",infoJson.value("singer"));
+        }
 
-        emitJson.insert("artist",infoJson.value("singer"));
         if(fileType==Network::Lyric){
             emitJson.insert("lyric",QJsonValue(QUrl::fromLocalFile(newName).toString()));
         }
+
         else if(fileType==Network::Pic){
             emitJson.insert("cover",QJsonValue(QUrl::fromLocalFile(newName).toString()));
         }
@@ -426,11 +437,12 @@ void Network::replyFinished(){
         QJsonDocument doc;
         doc.setObject(emitJson);
         QVariant var=doc.toJson(QJsonDocument::Compact);
+        //如果非空值，则返回
         if(!var.isNull()){
             emit succeeded(var);
         }
-
     }
+    //默认
     requestTimes=0;
     delete reply;
     reply=0;

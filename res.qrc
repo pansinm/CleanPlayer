@@ -4,7 +4,6 @@
         <file>qml/LyricView.qml</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/TopBar.qml</file>
-        <file>qml/PlaylistViewHeader.qml</file>
         <file>qml/PlaylistView.qml</file>
         <file>qml/DisplayRegion.qml</file>
     </qresource>
@@ -24,9 +23,12 @@
         <file>image/random.png</file>
         <file>image/sequence.png</file>
         <file>image/defaultCover.png</file>
-        <file>image/defaulBkg.png</file>
         <file>image/down.png</file>
         <file>image/up.png</file>
-        <file>image/bkg2.jpg</file>
+        <file>image/update.png</file>
+        <file>image/clear.png</file>
+        <file>image/left.png</file>
+        <file>image/right.png</file>
+        <file>image/bkg.png</file>
     </qresource>
 </RCC>

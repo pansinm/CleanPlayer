@@ -4,12 +4,13 @@ import MyComponents 1.0
 import QtMultimedia 5.0
 import QtQuick.Dialogs 1.1
 
+
 Rectangle {
     id:root
     width: 640
     height: 480
     radius: 3
-
+    color:"#00000000"
     //存储当前歌曲信息
     property var jsonObj : new Object
 
@@ -30,20 +31,22 @@ Rectangle {
     }
     */
 
-
+    /*
     //渐变背景
     gradient:Gradient{
        GradientStop { position: 0.0; color: "#FF3C3C3C"}
        GradientStop { position: 0.889; color: "#FF141414" }
        GradientStop { position: 1; color:  "#FF141414" }
     }
+    */
 
     Image{
         id:bakgroundImg
+        clip: true
         anchors.fill: parent
-        fillMode: Image.Stretch
-        source: "qrc:/image/image/bkg2.jpg"
+        source: "qrc:/image/image/bkg.png"
     }
+
 
    //拖拽
     MouseArea {
@@ -73,9 +76,15 @@ Rectangle {
         }
 
         onCurrentMediaIndexChanged: {
-            console.log("jsonObj");
-            jsonObj=JSON.parse(playlist.at(playlist.currentMediaIndex()));
-            player.play();
+
+            if(currentMediaIndex()<0){
+                jsonObj={"url":"","title":"","artist":"未知歌手","lyric":"","cover":""}
+                player.stop();
+            }
+            else{
+                jsonObj=JSON.parse(playlist.at(playlist.currentMediaIndex()));
+                player.source=jsonObj.url
+            }
         }
 
     }
@@ -92,6 +101,7 @@ Rectangle {
     MediaPlayer{
         id:player
         source: jsonObj.url
+        volume: 0.7
         onStatusChanged: {
             if(status===MediaPlayer.EndOfMedia){
                  playlist.next();
@@ -102,6 +112,9 @@ Rectangle {
             playlist.remove(playlist.currentMediaIndex());
             if(playlist.currentMediaIndex()>=0){
                 play();
+            }
+            else{
+                stop();
             }
         }
     }
@@ -120,12 +133,18 @@ Rectangle {
             for(var i=0;i<arrUrls.length;i++){
                 playlist.append(arrUrls[i])
             }
+
+            if(playlist.currentMediaIndex()<0&&playlist.count()>0){
+
+                playlist.setCurrentMediaIndex(0);
+                console.log("setCurrentIndex:")<<playlist.currentMediaIndex();
+            }
         }
     }
 
     LyricView{
         id:lyricView
-        anchors.top:listViewTopBar.bottom
+        anchors.top:listShowHideBtn.top
         anchors.topMargin: 15
         anchors.left: displayRegion.right
     }
@@ -135,20 +154,48 @@ Rectangle {
         id:topBar
     }
 
-    //放置添加等按钮
-    PlaylistViewHeader{
-        id:listViewTopBar
+
+    //隐藏展开playlistview
+    Rectangle{
+        id:listShowHideBtn
+        width: 18
+        height: 350
+        radius: 2
         anchors.top: topBar.bottom
+        anchors.topMargin: 8
         anchors.right: parent.right
-        anchors.topMargin: 15
-        anchors.rightMargin: 15
+        property bool isHide: false
+        color:"#00000000"
+        Image{
+            id:listShowHideImg
+            anchors.centerIn: parent
+            source: parent.isHide?"qrc:/image/image/left.png" : "qrc:/image/image/right.png"
+            visible: false
+        }
+        MouseArea{
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: {
+                parent.color="#50808080"
+                listShowHideImg.visible=true;
+            }
+            onExited: {
+                parent.color="#00000000"
+                listShowHideImg.visible=false;
+            }
+
+            onClicked: {
+                parent.isHide?expandList.start():scrollList.start();
+                parent.isHide=!parent.isHide;
+            }
+        }
     }
 
     PlaylistView{
         id:playlistRegion
-        anchors.right: parent.right
-        anchors.rightMargin: 15
-        anchors.top: listViewTopBar.bottom
+        anchors.right: listShowHideBtn.left
+        anchors.rightMargin: 2
+        anchors.top: listShowHideBtn.top
         //anchors.topMargin: 5
     }
 
@@ -160,21 +207,29 @@ Rectangle {
     DisplayRegion{
         id:displayRegion
     }
-    /*
 
-
-    LyricView{
-        id:lyricRegion
-        x:220
-        y:100
-    }
-
-    /*
-    PlayerControler{
-        id:playControler
+    //列表收缩展开动画
+    ParallelAnimation{
+        id: scrollList
+        running: false
+        NumberAnimation { target: playlistRegion; property: "width"; to: 0 ; duration: 200}
+        //PropertyAnimation { target: playlistRegion; property: "visible"; to: false ; duration: 50}
+         NumberAnimation { target: lyricView; property: "width"; to: 380; duration: 200}
+         PropertyAnimation { target: lyricView; property: "lineSpace"; to: 20 ; duration: 50}
+         PropertyAnimation { target: lyricView; property: "fontSize"; to: 10 ; duration: 50}
 
     }
-    */
+
+
+    ParallelAnimation{
+        id: expandList
+        running: false
+        NumberAnimation { target: lyricView; property: "width"; to: 220; duration: 200}
+        PropertyAnimation { target: lyricView; property: "lineSpace"; to: 25 ; duration: 50}
+        PropertyAnimation { target: lyricView; property: "fontSize"; to: 8 ; duration: 50}
+        NumberAnimation { target: playlistRegion; property: "width"; to: 180 ; duration: 200}
+
+    }
    Component.onCompleted:{
        playlist.load("playlist.xml")
        //player.stop();

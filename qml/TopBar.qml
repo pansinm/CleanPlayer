@@ -4,7 +4,7 @@ Rectangle {
     anchors.top: parent.top
     anchors.left: parent.left
     width: parent.width
-    height: 36
+    height: 40
     color:"#00000000"
 
     //程序标题
@@ -37,10 +37,13 @@ Rectangle {
         width: 25
         radius:8
         color:"#00000000"
-        Image {
+        Text {
+            color: "lightgrey"
             anchors.fill: parent
-            id: name
-            source: "qrc:/image/image/close-normal.png"
+            text:"×"
+            font.pointSize: 16
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
         }
 
         MouseArea{
@@ -54,6 +57,37 @@ Rectangle {
                 mainwindow.close()
             }
             }
+
+    }
+
+    Rectangle {
+        id:minBtn
+        anchors.right: closeBtn.left
+        anchors.rightMargin: 3
+        anchors.verticalCenter: parent.verticalCenter
+        height: 25
+        width: 25
+        radius:8
+        color:"#00000000"
+        Text {
+            color: "lightgrey"
+            anchors.fill: parent
+            text:"-"
+            font.pointSize: 20
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        MouseArea{
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: parent.color="grey"
+            onExited: parent.color="#00000000"
+            onClicked:
+            {
+                mainwindow.showMinimized();
+            }
+        }
 
     }
 }

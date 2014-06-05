@@ -34,6 +34,7 @@ public:
     //清空列表
     Q_INVOKABLE void clear(){
         m_playlist.clear();
+        setCurrentMediaIndex(-1);
         emit cleared();
         emit changed();
         emit countChanged();
@@ -68,7 +69,7 @@ public:
     Q_INVOKABLE int indexOf(const QUrl& url);
     //设置当前索引
     Q_INVOKABLE void setCurrentMediaIndex(const int index){
-        if(index<0||index>=m_playlist.count()){
+        if(index>=m_playlist.count()){
             return;
         }
         m_currentMediaIndex=index;
@@ -86,7 +87,11 @@ signals:
     void inserted(int index);
     void removed(int index);
     void replaced(int index);
+    //已加载
+    void loaded();
+    //已更新
     void synchronized();
+    //已添加
     void appended();
     void countChanged();
     void currentMediaIndexChanged();

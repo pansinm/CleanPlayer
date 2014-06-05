@@ -60,9 +60,10 @@ Rectangle {
     Connections{
         target: playlist
         onCurrentMediaIndexChanged:{
-
-            if(!playlist.isCoverValid(jsonObj.cover)){
-                network.getPic(JSON.stringify(jsonObj));
+            if(playlist.currentMediaIndex()>=0){
+                if(!playlist.isCoverValid(jsonObj.cover)){
+                    network.getPic(JSON.stringify(jsonObj));
+                }
             }
         }
     }

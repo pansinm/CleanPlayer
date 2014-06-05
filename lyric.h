@@ -33,6 +33,7 @@ public slots:
 private:
     void parseLyricLine(const QString& line);
     void sort();
+    int offset;
     QStack<qint64> times;
     QList<LyricLine*> lyricList;
 

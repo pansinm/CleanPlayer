@@ -3,8 +3,113 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 Rectangle {
     width: 180
-    height: 320
+    height: 350
     color:"#50b2b6b9"
+
+    //列表头，添加删除等
+    Rectangle {
+        id:listViewHeader
+        height: 24
+        width: parent.width
+        radius: 3
+        clip:true
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        color:"#90b1b7b5"
+        property bool isScrolled: false
+        //列表和歌词区域切换
+        MouseArea{
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: parent.color="#80d9d9d9"
+            onExited: parent.color="#90b1b7b5"
+            onClicked: {
+                if(isScrolled){
+                    expandList.start();
+                }
+                else{
+                    scrollList.start();
+                }
+                isScrolled=!isScrolled;
+
+            }
+        }
+
+        Rectangle{
+            id:clearListBtn
+            width: 24
+            height: 24
+            radius: 3
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            color:"#00000000"
+            Image{
+                anchors.centerIn: parent
+                //播放列表展开和收缩时绑定不同的图标
+                source:"qrc:/image/image/clear.png"
+            }
+            MouseArea{
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: {
+                    parent.color="#50505080"
+
+                }
+                onExited: {
+                    parent.color="#00000000"
+                }
+
+                onClicked: playlist.clear()
+            }
+
+        }
+
+        Text{
+            anchors.centerIn: parent
+            color: "#ffffff"
+            text:"播放列表"
+            font.family: "微软雅黑"
+            font.pointSize: 10
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+
+
+        Rectangle{
+            id:addMusicBtn
+            width: 24
+            height: 24
+            anchors.top: parent.top
+            anchors.left: parent.left
+            color: "#00000000"
+            radius: 3
+            Image {
+                id: addImg
+                anchors.centerIn: parent
+                source: "qrc:/image/image/add.png"
+            }
+
+
+            MouseArea{
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: {
+                    parent.color="#50505080"
+
+                }
+                onExited: {
+                    parent.color="#00000000"
+                }
+
+                onClicked: fileDialog.open()
+            }
+        }
+
+
+
+    }
+
     ListModel{
         id:playlistModel
     }
@@ -58,12 +163,13 @@ Rectangle {
                     topColor.color= "#90c6d6dd";;
                     bottomColor.color="#90aac1c8";
                     removeBtn.visible=true;
-                    titleTxt.color="white"
+                    //titleTxt.color="white"
                     wraper.isEntered=true
                 }
                 onExited: {
                     topColor.color="#00000000";
                     bottomColor.color="#00000000";
+                    //titleTxt.color="lightgrey"
                     removeBtn.visible=false;
                     wraper.isEntered=false
                 }
@@ -87,20 +193,19 @@ Rectangle {
                 gradient: Gradient {
                     GradientStop {
                         position: 0.00;
-                        color: "#80f39a9a";
+                        color: "#f15e5e";
                     }
                     GradientStop {
                         position: 1.00;
-                        color: "#80fb7171";
+                        color: "#c85c5c";
                     }
                 }
                 Text{
                     anchors.fill: parent
-                    text:"x"
+                    text:"×"
                     font.family: "微软雅黑"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    styleColor: "#b59d9d"
                 }
 
                 MouseArea{
@@ -111,11 +216,6 @@ Rectangle {
                 }
             }
 
-
-            ListView.onAdd: SequentialAnimation {
-                PropertyAction { target: wraper; property: "height"; value: 0 }
-                NumberAnimation { target: wraper; property: "height"; to: 30; duration: 50; easing.type: Easing.InOutQuad }
-            }
             ListView.onRemove: SequentialAnimation {
                 PropertyAction { target: wraper; property: "ListView.delayRemove"; value: true }
                 NumberAnimation { target: wraper; property: "height"; to: 0; duration: 250; easing.type: Easing.InOutQuad }
@@ -147,12 +247,14 @@ Rectangle {
     }
     ScrollView{
         width: parent.width
-        height: parent.height
-        anchors.centerIn: parent
+        height: parent.height-listViewHeader.height
+        anchors.top:listViewHeader.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        clip:true
         ListView{
             id:playlistView
             width: parent.width
-            height: parent.height
+            height: parent.height-listViewHeader.height
             anchors.centerIn: parent
             clip: true
             focus: true
@@ -191,7 +293,7 @@ Rectangle {
             decrementControl :Rectangle{
                 color:"#803d5869"
                 implicitWidth: 10
-                implicitHeight: 10
+                implicitHeight: 0
             }
             incrementControl :Rectangle{
                 color:"#803d5869"
@@ -234,6 +336,13 @@ Rectangle {
         onReplaced:{
             var obj = JSON.parse(playlist.at(index));
             playlistModel.set(index,obj);
+        }
+
+        onLoaded:{
+            for(var i=0;i<playlist.count();i++){
+                var obj = JSON.parse(playlist.at(i));
+                playlistModel.append(obj);
+            }
         }
 
         onCurrentMediaIndexChanged:{

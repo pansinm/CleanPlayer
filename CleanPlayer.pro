@@ -21,7 +21,6 @@ OTHER_FILES += \
     updatesummary.txt \
     qml/MainWindow.qml \
     qml/TopBar.qml \
-    qml/PlaylistViewHeader.qml \
     qml/PlaylistView.qml \
     qml/DisplayRegion.qml
 

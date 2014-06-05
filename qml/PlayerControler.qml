@@ -205,6 +205,7 @@ Rectangle {
             }
             onClicked:{
                 playlist.previous();
+                player.play();
             }
 
         }
@@ -243,6 +244,7 @@ Rectangle {
             }
             onClicked: {
                 playlist.next();
+                player.play();
             }
         }
 
@@ -269,9 +271,9 @@ Rectangle {
         width: 80
         height: 24
         radius: 3
-        anchors.right: slider.right
+        anchors.right: parent.right
         anchors.bottom: slider.top
-        anchors.rightMargin: 5
+        anchors.rightMargin: 20
         anchors.bottomMargin:  5
         color: "grey"
         //是否随机播放
@@ -418,6 +420,7 @@ Rectangle {
         text:"00:00"
     }
 
+
     //信号响应
     Connections{
         target: player
@@ -444,5 +447,7 @@ Rectangle {
                 currentPosition_txt.text=pad(min,2)+":"+pad(sec,2);
             }
         }
+
+
     }
 }

@@ -41,7 +41,10 @@ public:
     Q_INVOKABLE void getPic(const QVariant& json);
 
 signals:
+    //成功后发射json数据
     void succeeded(QVariant json);
+    //全部下载完成
+    void allDownloaded();
 public slots:
 
 private slots:
