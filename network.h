@@ -43,7 +43,7 @@ public:
 signals:
     //成功后发射json数据
     void succeeded(QVariant json);
-    //全部下载完成
+    //全部下载完成发射该信号
     void allDownloaded();
 public slots:
 
@@ -52,7 +52,10 @@ private slots:
     void replyReadied();
 
 private:
+    //开始下一个下载
     void startNext();
+
+    //请求指定链接
     void request(const QUrl& url);
 
     QNetworkReply* reply;
@@ -70,16 +73,21 @@ private:
     //存储数据用于成功后发射;
     QJsonObject emitJson;
 
+    //已请求次数
     int requestTimes;
 
+    //当前请求链接
     QUrl currentRequestUrl;
 
+    //reply是否占用
     bool isNetRequestBusy;
 
     QNetworkAccessManager manager;
 
+    //输出
     QFile output;
 
+    //输入栈，保存json数据
     QStack<InputObj> stack;
 };
 

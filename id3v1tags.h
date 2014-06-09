@@ -1,3 +1,4 @@
+//MP3 ID3V1信息读取//
 
 #ifndef ID3V1Tags_H
 #define ID3V1Tags_H

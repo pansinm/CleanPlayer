@@ -341,11 +341,11 @@ Rectangle {
             anchors.leftMargin: 0
             GradientStop {
                 position: 0.00;
-                color: "#ffffff";
+                color: "lightgrey";
             }
             GradientStop {
                 position: 1.00;
-                color: "#ececec";
+                color: "grey";
             }
         }
 

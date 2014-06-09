@@ -56,7 +56,7 @@ Rectangle {
                 color:lyricLineRect.ListView.isCurrentItem ? "white":"grey"
                 text:lyricLine
                 font.family: "微软雅黑"
-                font.pointSize: fontSize
+                font.pointSize:lyricLineRect.ListView.isCurrentItem ? fontSize+2 : fontSize
             }
         }
 
@@ -72,7 +72,7 @@ Rectangle {
         onCurrentItemChanged: NumberAnimation {
                         target: lyricView;
                         property: "contentY";
-                        to:lyricView.currentItem.y-70;
+                        to:lyricView.currentItem.y-65;
                         duration: 200;
                         easing.type: Easing.InOutQuad
                     }

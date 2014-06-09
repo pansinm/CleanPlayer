@@ -105,9 +105,17 @@ void Playlist::previous(){
 
 //返回位置i的json数据
 QVariant Playlist::at(const int i) const{
-
+    //返回空json
     if(i<0||i>=m_playlist.count()){
-        return QVariant();
+        QJsonObject jsonObjEmpty;
+        QJsonDocument jsonDocEmpty;
+        jsonObjEmpty.insert(QString("url"),QJsonValue(QString()));
+        jsonObjEmpty.insert(QString("title"),QJsonValue(QString()));
+        jsonObjEmpty.insert(QString("artist"),QJsonValue(QString()));
+        jsonObjEmpty.insert(QString("cover"),QJsonValue(QString()));
+        jsonObjEmpty.insert(QString("lyric"),QJsonValue(QString()));
+        jsonDocEmpty.setObject(jsonObjEmpty);
+        return jsonDocEmpty.toJson(QJsonDocument::Compact);
     }
 
     QJsonObject jsonObj;
