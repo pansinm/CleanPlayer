@@ -4,7 +4,7 @@ import QtQuick.Controls.Styles 1.1
 Rectangle {
     width: 180
     height: 350
-    color:"#50b2b6b9"
+    color:bkgColor
 
     //列表头，添加删除等
     Rectangle {
@@ -15,25 +15,9 @@ Rectangle {
         clip:true
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        color:"#90b1b7b5"
+        color:"#80d9d9d9"
         property bool isScrolled: false
-        //列表和歌词区域切换
-        MouseArea{
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: parent.color="#80d9d9d9"
-            onExited: parent.color="#90b1b7b5"
-            onClicked: {
-                if(isScrolled){
-                    expandList.start();
-                }
-                else{
-                    scrollList.start();
-                }
-                isScrolled=!isScrolled;
 
-            }
-        }
 
         Rectangle{
             id:clearListBtn
@@ -52,7 +36,7 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 onEntered: {
-                    parent.color="#50505080"
+                    parent.color="#50d6c2b9"
 
                 }
                 onExited: {
@@ -95,7 +79,7 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 onEntered: {
-                    parent.color="#50505080"
+                    parent.color="#50d6c2b9"
 
                 }
                 onExited: {
@@ -146,7 +130,7 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                color:wraper.ListView.isCurrentItem? "white":"lightGrey"
+                color:wraper.ListView.isCurrentItem? "white":"#90ffffff"
                 text:title
                 font.family: "微软雅黑"
                 font.pointSize: 8
@@ -160,16 +144,14 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 onEntered: {
-                    topColor.color= "#90c6d6dd";;
-                    bottomColor.color="#90aac1c8";
+                    topColor.color= "#20ffffff";;
+                    bottomColor.color="#30ffffff";
                     removeBtn.visible=true;
-                    //titleTxt.color="white"
                     wraper.isEntered=true
                 }
                 onExited: {
                     topColor.color="#00000000";
                     bottomColor.color="#00000000";
-                    //titleTxt.color="lightgrey"
                     removeBtn.visible=false;
                     wraper.isEntered=false
                 }
@@ -183,9 +165,9 @@ Rectangle {
                 id:removeBtn
                 height: 24
                 width: 24
-                radius:12
+                radius:3
                 border.width: 1
-                border.color: "grey"
+                border.color: "#20202020"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 10
@@ -193,11 +175,11 @@ Rectangle {
                 gradient: Gradient {
                     GradientStop {
                         position: 0.00;
-                        color: "#f15e5e";
+                        color: "#80ff0000";
                     }
                     GradientStop {
                         position: 1.00;
-                        color: "#c85c5c";
+                        color: "#90ff0000";
                     }
                 }
                 Text{
@@ -277,44 +259,31 @@ Rectangle {
                 gradient: Gradient {
                     GradientStop {
                         position: 0.00;
-                        color: "#6995b1";
+                        color: "#40000000";
                     }
                     GradientStop {
-                        position: 0.50;
-                        color: "#5780a6";
+                        position: 1.0;
+                        color: "#50000000";
                     }
-                    GradientStop {
-                        position: 1.00;
-                        color: "#6995b1";
-                    }
+
                 }
 
                 }
             decrementControl :Rectangle{
-                color:"#803d5869"
+                color:"#303d5869"
                 implicitWidth: 10
                 implicitHeight: 0
             }
             incrementControl :Rectangle{
-                color:"#803d5869"
+                color:"#303d5869"
                 implicitWidth: 10
                 implicitHeight: 0
             }
             scrollBarBackground :Rectangle{
                 implicitWidth: 10
                 implicitHeight: 150
-                color:"#803d5869"
-                GradientStop {
-                    position: 0.00;
-                    color: "#803d5869";
-                }
-                GradientStop {
-                    position: 1.00;
-                    color: "#802f4c62";
-                }
+                color:"#20ffffff"
             }
-
-
         }
     }
     Connections{
@@ -343,9 +312,11 @@ Rectangle {
                 var obj = JSON.parse(playlist.at(i));
                 playlistModel.append(obj);
             }
+            playlistView.currentIndex=playlist.currentMediaIndex();
         }
 
         onCurrentMediaIndexChanged:{
+            console.log("currentchanged");
             playlistView.currentIndex=playlist.currentMediaIndex();
         }
     }

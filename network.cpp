@@ -20,9 +20,11 @@ const QString Api_getSong="http://ting.baidu.com/data/music/links?songIds=%1";
 const int MaxRequestTimes=20;
 
  Network::Network(QObject *parent) :
-    QObject(parent),requestTimes(0),isNetRequestBusy(false)
+    QObject(parent),requestTimes(0)
 {
-
+     reply=0;
+    isNetRequestBusy=false;
+    isAbort=false;
 }
 void Network::getLyric(const QVariant& json){
     qDebug()<<"Network::getLyric()"<<json;
@@ -72,6 +74,7 @@ void Network::startNext(){
     if(stack.isEmpty()){
         emit allDownloaded();
         isNetRequestBusy=false;
+        qDebug()<<"all downloaded";
         return;
     }
 
@@ -180,8 +183,19 @@ void Network::replyReadied(){
 }
 
 void Network::replyFinished(){
+    qDebug()<<"replyFinished//";
+    if(isAbort){
+        if(output.isOpen()){
+            output.close();
+        }
+        delete reply;
+        reply=0;
+        requestTimes=0;
+        startNext();
+        isAbort=false;
+        return;
+    }
 
-    qDebug()<<"Network::replyFinished():";
     if(period==Network::RequestInfo){
 
         QJsonParseError jsonError;
@@ -449,3 +463,19 @@ void Network::replyFinished(){
     startNext();
 }
 
+//清空栈，并中断当前下载
+void Network::clearDownload(){
+    qDebug()<<"clear";
+    stack.clear();
+
+    //Qt网络是异步的，所以除了要判断reply外还要判断isAbort
+    //否则有可能调用多次reply->abort()而导致程序崩溃
+    if(reply!=0&&isAbort==false){
+        isAbort=true;
+        //reply->abort();
+        //用abort在快速切换的情况下会崩溃，也可能是异步的原因；
+        //reply->close会在执行完当前请求的情况下关闭；
+        reply->close();
+    }
+    qDebug()<<"cleared";
+}

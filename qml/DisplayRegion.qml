@@ -13,7 +13,7 @@ Rectangle {
     //演唱
     Text{
         id: artist
-        color:"#92bee8"
+        color:fontColor
         anchors.bottom: cover.top
         anchors.bottomMargin: 25
         anchors.left: cover.left
@@ -54,18 +54,6 @@ Rectangle {
         anchors.topMargin: 60
         source:jsonObj.cover
 
-    }
-
-
-    Connections{
-        target: playlist
-        onCurrentMediaIndexChanged:{
-            if(playlist.currentMediaIndex()>=0){
-                if(!playlist.isCoverValid(jsonObj.cover)){
-                    network.getPic(JSON.stringify(jsonObj));
-                }
-            }
-        }
     }
 
 

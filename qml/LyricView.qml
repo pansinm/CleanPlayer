@@ -9,32 +9,13 @@ Rectangle {
     property real msec: 0
     property int fontSize: 8
     property int lineSpace: 20
+    property bool netStateImgVisible: false
 
     Image {
         id: netStateImg
         anchors.centerIn: parent
-        visible: false
+        visible: netStateImgVisible
         source: "qrc:/image/image/update.png"
-
-        RotationAnimation {
-               id:updateRotation
-               target: netStateImg
-               //一直循环
-               loops: Animation.Infinite
-               from: 0
-               to: 360
-               running: false
-               duration: 1000
-           }
-
-        //显示的时候转动
-        onVisibleChanged: {
-            if(visible){
-                updateRotation.start();
-            }
-            else
-                updateRotation.stop();
-        }
     }
 
 
@@ -53,7 +34,7 @@ Rectangle {
             Text{
                 id:lyricTxt
                 anchors.centerIn: parent
-                color:lyricLineRect.ListView.isCurrentItem ? "white":"grey"
+                color:lyricLineRect.ListView.isCurrentItem ? "white":"#80ffffff"
                 text:lyricLine
                 font.family: "微软雅黑"
                 font.pointSize:lyricLineRect.ListView.isCurrentItem ? fontSize+2 : fontSize
@@ -73,13 +54,13 @@ Rectangle {
                         target: lyricView;
                         property: "contentY";
                         to:lyricView.currentItem.y-65;
-                        duration: 200;
-                        easing.type: Easing.InOutQuad
+                        duration: 500;
+                        easing.type: Easing.OutSine
                     }
         MouseArea{
             anchors.fill: parent
             hoverEnabled: true
-            onEntered:parent.parent.color="#304d6557"
+            onEntered:parent.parent.color=bkgColor
             onExited: parent.parent.color="#00000000"
             onDoubleClicked:  {
                 if(listShowHideBtn.isHide){
@@ -112,19 +93,25 @@ Rectangle {
             }
         }
     }
+    RotationAnimation {
+           id:updateRotation
+           target: netStateImg
+           //一直循环
+           loops: Animation.Infinite
+           from: 0
+           to: 360
+           running: false
+           duration: 1000
+       }
 
-    Connections{
-        target: playlist
-        onCurrentMediaIndexChanged:{
-            if(playlist.currentMediaIndex()>=0){
-                //如果原歌词无效，则重新下载
-                if(!playlist.isLyricValid(jsonObj.lyric)){
-                    network.getLyric(playlist.at(playlist.currentMediaIndex()));
-                    netStateImg.visible=true
-                }
-            }
+    //显示的时候转动
+    onNetStateImgVisibleChanged: {
+        if(netStateImgVisible){
+            updateRotation.start();
         }
-
+        else{
+            updateRotation.stop();
+        }
     }
 
     Connections{
@@ -142,9 +129,7 @@ Rectangle {
     Connections{
         target: network
         onAllDownloaded:{
-            console.log("downloaded...")
-            netStateImg.visible=false;
-
+            netStateImgVisible=false;
         }
     }
 }

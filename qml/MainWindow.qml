@@ -10,9 +10,11 @@ Rectangle {
     width: 640
     height: 480
     radius: 3
-    color:"#00000000"
+    //color:"#1d555a"
     //存储当前歌曲信息
     property var jsonObj : new Object
+    property color bkgColor: "#20ffffff"
+    property color fontColor:"#7bb9e8"
 
     /*/color:"#00000000"
     gradient: Gradient {
@@ -31,21 +33,18 @@ Rectangle {
     }
     */
 
-    /*
+
     //渐变背景
-    gradient:Gradient{
-       GradientStop { position: 0.0; color: "#FF3C3C3C"}
-       GradientStop { position: 0.889; color: "#FF141414" }
-       GradientStop { position: 1; color:  "#FF141414" }
-    }
-    */
+
+
 
     Image{
         id:bakgroundImg
         clip: true
         anchors.fill: parent
-        source: "qrc:/image/image/bkg.png"
+        source: "qrc:/image/image/bkgdae.png"
     }
+
 
 
    //拖拽
@@ -76,15 +75,29 @@ Rectangle {
         }
 
         onCurrentMediaIndexChanged: {
-
+            //如果列表没有项目
             if(currentMediaIndex()<0){
                 jsonObj={"url":"","title":"","artist":"未知歌手","lyric":"","cover":""}
+                player.source=jsonObj.url;
                 player.stop();
             }
             else{
+                console.log("currentChanged")
                 jsonObj=JSON.parse(playlist.at(playlist.currentMediaIndex()));
-                player.source=jsonObj.url
+                player.source=jsonObj.url;
+
+                network.clearDownload();
+
+                if(!isCoverValid(jsonObj.cover)){
+                    network.getPic(JSON.stringify(jsonObj));
+                }
+                //如果原歌词无效，则重新下载
+                if(!isLyricValid(jsonObj.lyric)){
+                    network.getLyric(JSON.stringify(jsonObj));
+                    lyricView.netStateImgVisible=true
+                }
             }
+
         }
 
     }
@@ -132,10 +145,10 @@ Rectangle {
             //判断url是否重复，如果不重复，则添加至musiclist中
             for(var i=0;i<arrUrls.length;i++){
                 playlist.append(arrUrls[i])
+                console.log(arrUrls[i])
             }
 
             if(playlist.currentMediaIndex()<0&&playlist.count()>0){
-
                 playlist.setCurrentMediaIndex(0);
                 console.log("setCurrentIndex:")<<playlist.currentMediaIndex();
             }
@@ -145,7 +158,7 @@ Rectangle {
     LyricView{
         id:lyricView
         anchors.top:listShowHideBtn.top
-        anchors.topMargin: 15
+        anchors.topMargin: 35
         anchors.left: displayRegion.right
     }
 
@@ -176,7 +189,7 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onEntered: {
-                parent.color="#50808080"
+                parent.color=bkgColor
                 listShowHideImg.visible=true;
             }
             onExited: {
@@ -216,7 +229,7 @@ Rectangle {
         //PropertyAnimation { target: playlistRegion; property: "visible"; to: false ; duration: 50}
          NumberAnimation { target: lyricView; property: "width"; to: 380; duration: 200}
          PropertyAnimation { target: lyricView; property: "lineSpace"; to: 20 ; duration: 50}
-         PropertyAnimation { target: lyricView; property: "fontSize"; to: 10 ; duration: 50}
+         PropertyAnimation { target: lyricView; property: "fontSize"; to: 9 ; duration: 50}
 
     }
 

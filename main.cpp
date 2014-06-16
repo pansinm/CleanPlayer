@@ -24,19 +24,16 @@ int main(int argc,char* argv[])
 
     //无边框，背景透明
     viewer.setFlags(Qt::FramelessWindowHint|Qt::Window|Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
-    //viewer.setFlags();
-    viewer.setColor(QColor(Qt::transparent));
+    viewer.setTitle("Dae Player");
+
+    //这行不注释掉的话在XP系统无法正常显示
+    //viewer.setColor(QColor(Qt::transparent));
 
     //加载qml
     viewer.setSource(QUrl("qrc:/qml/qml/MainWindow.qml"));
 
     viewer.rootContext()->setContextProperty("mainwindow",&viewer);
 
-    //PlayEngine engine(&viewer);
-    //viewer.rootContext()->setContextProperty("playengine",&engine);
-    //viewer.rootContext()->setContextProperty("myModel",&engine.listModel);
-    //QObject* qmlObj=dynamic_cast<QObject*>(viewer.rootObject());
-    //QObject::connect(qmlObj,SIGNAL(next),&engine,SLOT(playNext()));
     viewer.show();
     return app.exec();
 }

@@ -10,7 +10,7 @@ Rectangle {
     //程序标题
     Text{
         anchors.centerIn: parent
-        color: "#999898"
+        color: "#fff061"
         text:"Clean Player"
         font.family: "微软雅黑"
         verticalAlignment: Text.AlignVCenter
@@ -24,7 +24,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 1
-        color:"#FF828282"
+        color:"#e0ffffff"
     }
 
     //关闭按钮
@@ -38,7 +38,7 @@ Rectangle {
         radius:8
         color:"#00000000"
         Text {
-            color: "lightgrey"
+            color: "white"
             anchors.fill: parent
             text:"×"
             font.pointSize: 16
@@ -49,7 +49,7 @@ Rectangle {
         MouseArea{
             anchors.fill: parent
             hoverEnabled: true
-            onEntered: parent.color="#f31414"
+            onEntered: parent.color="#90ff0000"
             onExited: parent.color="#00000000"
             onClicked:
             {
@@ -70,7 +70,7 @@ Rectangle {
         radius:8
         color:"#00000000"
         Text {
-            color: "lightgrey"
+            color: "white"
             anchors.fill: parent
             text:"-"
             font.pointSize: 20
@@ -81,7 +81,7 @@ Rectangle {
         MouseArea{
             anchors.fill: parent
             hoverEnabled: true
-            onEntered: parent.color="grey"
+            onEntered: parent.color="#40ffffff"
             onExited: parent.color="#00000000"
             onClicked:
             {

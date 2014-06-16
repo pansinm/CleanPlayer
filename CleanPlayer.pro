@@ -13,8 +13,6 @@ SOURCES += \
     musicinfo.cpp \
     network.cpp
 
-QTPLUGIN += dsengine qtmedia_audioengine
-
 OTHER_FILES += \
     qml/PlayerControler.qml \
     qml/LyricView.qml \

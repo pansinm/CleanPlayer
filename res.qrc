@@ -30,5 +30,6 @@
         <file>image/left.png</file>
         <file>image/right.png</file>
         <file>image/bkg.png</file>
+        <file>image/bkgdae.png</file>
     </qresource>
 </RCC>

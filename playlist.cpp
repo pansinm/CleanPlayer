@@ -17,9 +17,10 @@
 #include<QTime>
 #include"id3v1tags.h"
 Playlist::Playlist(QObject *parent) :
-    QObject(parent),m_currentMediaIndex(-1),m_playMode(Sequence)
+    QObject(parent),m_currentMediaIndex(-1)
 {
-
+    m_playMode=Sequence;
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 }
 
 //设置播放模式，随机或顺序
@@ -77,13 +78,16 @@ int Playlist::indexOf(const QUrl& url){
 
 //将下一首设置为当前索引
 void Playlist::next(){
+    qDebug()<<"curentIndex"<<m_currentMediaIndex<<playMode();
     if(m_playMode==Sequence){
         if(m_currentMediaIndex<m_playlist.count()-1){
+
             setCurrentMediaIndex(++m_currentMediaIndex);
+
         }
     }
     else if(m_playMode==Random){
-        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+        qDebug()<<"random...";
         int i=qrand()%m_playlist.count()+1;
         setCurrentMediaIndex(i);
     }
@@ -97,7 +101,6 @@ void Playlist::previous(){
         }
     }
     else if(m_playMode==Random){
-        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
         int i=qrand()%m_playlist.count()+1;
         setCurrentMediaIndex(i);
     }

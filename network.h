@@ -40,6 +40,9 @@ public:
     Q_INVOKABLE void getSong(const QVariant& json);
     Q_INVOKABLE void getPic(const QVariant& json);
 
+    //取消当前下载当前下载并清空栈
+    Q_INVOKABLE void clearDownload();
+
 signals:
     //成功后发射json数据
     void succeeded(QVariant json);
@@ -52,6 +55,9 @@ private slots:
     void replyReadied();
 
 private:
+    //是否中断下载
+    bool isAbort;
+
     //开始下一个下载
     void startNext();
 

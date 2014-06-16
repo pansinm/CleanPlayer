@@ -44,7 +44,7 @@ Rectangle {
             MouseArea{
                 anchors.fill: parent
                 hoverEnabled: true
-                onEntered: parent.color="#50505080"
+                onEntered: parent.color=bkgColor
                 onExited: parent.color="#00000000"
                 onClicked: {
                     player.muted=!player.muted
@@ -142,7 +142,7 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onEntered:{
-                parent.color="#50505080";
+                parent.color=bkgColor;
 
             }
             onExited: {
@@ -191,7 +191,7 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onEntered: {
-                parent.color="#50505080";
+                parent.color=bkgColor;
 
             }
             onExited: {
@@ -230,7 +230,7 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onEntered: {
-                parent.color="#50505080";
+                parent.color=bkgColor;
 
             }
             onExited: {
@@ -243,8 +243,10 @@ Rectangle {
                 parent.color="#00000000";
             }
             onClicked: {
+                console.log("开始")
                 playlist.next();
                 player.play();
+                console.log("结束")
             }
         }
 
@@ -253,7 +255,7 @@ Rectangle {
     //标题
     Text{
         id: title
-        color:"#71addb"
+        color:fontColor
         anchors.bottom: slider.top
         anchors.bottomMargin: 3
         anchors.left: volumeControler.left
@@ -275,7 +277,7 @@ Rectangle {
         anchors.bottom: slider.top
         anchors.rightMargin: 20
         anchors.bottomMargin:  5
-        color: "grey"
+        color: "#25202020"
         //是否随机播放
         property bool random: false
         states:[State{
@@ -339,13 +341,15 @@ Rectangle {
             radius: 3
             anchors.left: parent.left
             anchors.leftMargin: 0
-            GradientStop {
+            gradient: Gradient{
+                GradientStop {
                 position: 0.00;
-                color: "lightgrey";
-            }
-            GradientStop {
-                position: 1.00;
-                color: "grey";
+                color: "#30ffffff";
+                }
+                GradientStop {
+                    position: 1.00;
+                    color: "#40ffffff";
+                }
             }
         }
 
@@ -365,7 +369,7 @@ Rectangle {
             groove: Rectangle {
                 implicitWidth: 610
                 implicitHeight: 1.5
-                color: "#828282"
+                color: "#e0ffffff"
                 radius: 1
             }
             handle: Rectangle {
@@ -406,7 +410,7 @@ Rectangle {
         anchors.left: slider.left
         anchors.top: slider.bottom
         anchors.topMargin: 3
-        color:"#828282"
+        color:fontColor
         text:"00:00"
     }
 
@@ -416,7 +420,7 @@ Rectangle {
         anchors.right: slider.right
         anchors.top: slider.bottom
         anchors.topMargin: 3
-        color:"#828282"
+        color:fontColor
         text:"00:00"
     }
 
