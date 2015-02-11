@@ -103,9 +103,6 @@ Rectangle {
                     volumeImg.source="qrc:/image/image/volume-mute-icon.png";
                 }
             }
-
-
-
         }
 
         Connections{
@@ -389,8 +386,8 @@ Rectangle {
             //拖动时改变当前时间显示
             if(pressed){
                 var pos=value;
-                var min=Math.round(pos/1000/60);
-                var sec=Math.round(pos/1000%60);
+                var min=Math.floor(pos/1000/60);
+                var sec=Math.floor(pos/1000%60);
                 currentPosition_txt.text=parent.pad(min,2)+":"+parent.pad(sec,2);
 
             }
@@ -434,16 +431,16 @@ Rectangle {
 
         onDurationChanged: {
             var du=player.duration;
-            var min=Math.round(du/1000/60);
-            var sec=Math.round(du/1000%60);
+            var min=Math.floor(du/1000/60);
+            var sec=Math.floor(du/1000%60);
             slider.maximumValue=du;
             musicLength_txt.text=pad(min,2)+":"+pad(sec,2);
         }
 
         onPositionChanged:{
             var du=player.position;
-            var min=Math.round(du/1000/60);
-            var sec=Math.round(du/1000%60);
+            var min=Math.floor(du/1000/60);
+            var sec=Math.floor(du/1000%60);
 
             //如果左键按下，则不同步slider.value
             if(!slider.pressed){

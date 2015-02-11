@@ -33,3 +33,6 @@ HEADERS += \
     musicinfo.h \
     network.h
 
+DISTFILES += \
+    readme.md
+
