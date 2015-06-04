@@ -78,6 +78,7 @@ signals:
     void coverChanged();
     void lyricChanged();
 public slots:
+
 private:
     QUrl m_url;
     QString m_title;

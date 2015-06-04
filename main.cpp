@@ -8,7 +8,7 @@
 #include<QString>
 #include<lyric.h>
 //#include"playengine.h"
-#include"playlist.h"
+#include"playlist_old.h"
 #include"musicinfo.h"
 #include"network.h"
 int main(int argc,char* argv[])

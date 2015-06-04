@@ -23,7 +23,6 @@ class Network : public QObject
     Q_OBJECT
 public:
 
-
     //下载的文件类型，歌曲，歌词，图片
     enum DownloadType{Song,Lyric,Pic};
 

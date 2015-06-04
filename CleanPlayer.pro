@@ -9,9 +9,13 @@ SOURCES += \
     main.cpp \
     lyric.cpp \
     id3v1tags.cpp \
-    playlist.cpp \
     musicinfo.cpp \
-    network.cpp
+    network.cpp \
+    baidumusic.cpp \
+    playercontroller.cpp \
+    playlist_old.cpp \
+    playlist.cpp \
+    songinfo.cpp
 
 OTHER_FILES += \
     qml/PlayerControler.qml \
@@ -29,9 +33,13 @@ HEADERS += \
     lyric.h \
     id3v1tags.h \
     id3v1tagsdef.h \
-    playlist.h \
     musicinfo.h \
-    network.h
+    network.h \
+    baidumusic.h \
+    playercontroller.h \
+    playlist_old.h \
+    playlist.h \
+    songinfo.h
 
 DISTFILES += \
     readme.md
