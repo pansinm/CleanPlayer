@@ -13,9 +13,8 @@ SOURCES += \
     network.cpp \
     baidumusic.cpp \
     playercontroller.cpp \
-    playlist_old.cpp \
     playlist.cpp \
-    songinfo.cpp
+    cookiejar.cpp
 
 OTHER_FILES += \
     qml/PlayerControler.qml \
@@ -37,9 +36,8 @@ HEADERS += \
     network.h \
     baidumusic.h \
     playercontroller.h \
-    playlist_old.h \
     playlist.h \
-    songinfo.h
+    cookiejar.h
 
 DISTFILES += \
     readme.md
