@@ -40,5 +40,13 @@ HEADERS += \
     cookiejar.h
 
 DISTFILES += \
-    readme.md
+    readme.md \
+    qml/Main.qml \
+    qml/resource/PlayButton.qml \
+    qml/resource/PreviousButton.qml \
+    qml/resource/NextButton.qml \
+    qml/LeftList.qml \
+    qml/resource/SearchBar.qml \
+    qml/resource/SearchResult.qml \
+    qml/resource/playlist.js
 

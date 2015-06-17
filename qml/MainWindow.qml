@@ -230,7 +230,6 @@ Rectangle {
          NumberAnimation { target: lyricView; property: "width"; to: 380; duration: 200}
          PropertyAnimation { target: lyricView; property: "lineSpace"; to: 20 ; duration: 50}
          PropertyAnimation { target: lyricView; property: "fontSize"; to: 9 ; duration: 50}
-
     }
 
 

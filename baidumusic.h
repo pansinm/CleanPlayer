@@ -15,44 +15,36 @@ public:
     explicit BaiduMusic(QObject *parent = 0);
     ~BaiduMusic();
 
-    /**
-     * @brief setSearchMode
-     * @param mode 搜索模式
-     * 		"force"：强制搜索，取消当前搜索
-     *      "ignore":如有关键字正在搜索中，则取消这此搜索
-     * 		"wait":等待，如果正在搜索中，则等待搜索完毕再执行搜索
-     */
-    void setSearchMode(const QString& mode);
 
     /**
      * @brief search 搜索歌曲
      * @param keyword 关键字
      * @param page	页数
      */
-    void search(const QString& keyword, int page);
+    Q_INVOKABLE void search(const QString& keyword, int page);
 
     /**
      * @brief getSuggestion 获取搜索建议
      * @param keyword 百度音乐歌曲id
      */
-    void getSuggestion(QString keyword);
+    Q_INVOKABLE void getSuggestion(QString keyword);
 
     /**
      * @brief getSongInfo 获取歌曲信息
      * @param songId
      */
-    void getSongInfo(int songId);
+    Q_INVOKABLE void getSongInfo(int songId);
 
     /**
      * @brief getSongLink 获取歌曲链接，包括下载链接和歌词连接等
      * @param songId
      */
-    void getSongLink(int songId);
+    Q_INVOKABLE void getSongLink(int songId);
 
 private:
     QNetworkAccessManager manager;
     QNetworkReply* searchReply;
-    QNetworkReply* sugestionReply;
+    QNetworkReply* suggestionReply;
     QNetworkReply* songInfoReply;
     QNetworkReply* songLinkReply;
 
@@ -61,13 +53,11 @@ private:
     QString nextSongIdOfInfo;
     QString nextSongIdOfLink;
 
-    QString searchMode;
-
     //保存所有cookie
     CookieJar cookieJar;
 private slots:
     void searchReplyFinished();
-    void sugestionReplyFinished();
+    void suggestionReplyFinished();
     void songInfoReplyFinished();
     void songLinkReplyFinished();
 signals:
@@ -75,6 +65,7 @@ signals:
      * @brief searchComplete 搜索完毕
      * @param currentPage 当前页
      * @param pageCount 总页数
+     * @param keyword 关键字
      * @param songList 歌曲列表,json数据
      * 	[
      * 		{"songItem":
@@ -92,7 +83,7 @@ signals:
      * 		...
      * ]
      */
-    void searchComplete(int currentPage,int pageCount,QString songList);
+    void searchComplete(int currentPage,int pageCount,QString keyword, QString songList);
 
     /**
      * @brief getSuggestionComplete 获取搜索建议完毕
@@ -130,7 +121,10 @@ signals:
      *   }
      *
      */
+
     void getSuggestionComplete(QString suggestion);
+
+    void getSongInfoComplete(QString songInfo);
 
     /**
      * @brief getSongLinkComplete 获取歌曲连接完毕

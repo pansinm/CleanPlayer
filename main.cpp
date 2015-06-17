@@ -17,7 +17,8 @@ int main(int argc,char* argv[])
 {
     QApplication app(argc,argv);
     QQuickView viewer;
-    //qmlRegisterType<Lyric>("MyComponents",1,0,"Lyric");
+
+    qmlRegisterType<BaiduMusic>("CleanPlayerCore",1,0,"BaiduMusic");
 
     //qmlRegisterType<Playlist>("MyComponents",1,0,"Playlist");
     //qmlRegisterType<MusicInfo>("MyComponents",1,0,"MusicInfo");
@@ -35,11 +36,10 @@ int main(int argc,char* argv[])
     //viewer.setSource(QUrl("qrc:/qml/qml/MainWindow.qml"));
 
     //viewer.rootContext()->setContextProperty("mainwindow",&viewer);
-    BaiduMusic* baidumusic = new BaiduMusic();
-    baidumusic->search("海阔天空",1);
+
+    viewer.setSource(QUrl("qrc:/qml/qml/Main.qml"));
 
     viewer.show();
-
 
     return app.exec();
 }

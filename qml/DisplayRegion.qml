@@ -55,6 +55,4 @@ Rectangle {
         source:jsonObj.cover
 
     }
-
-
 }

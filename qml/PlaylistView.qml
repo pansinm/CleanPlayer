@@ -18,7 +18,6 @@ Rectangle {
         color:"#80d9d9d9"
         property bool isScrolled: false
 
-
         Rectangle{
             id:clearListBtn
             width: 24

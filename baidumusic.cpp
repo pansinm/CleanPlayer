@@ -19,7 +19,7 @@ const QString ApiOfSearch = "http://music.baidu.com/search?key=%1&start=%2&size=
 
 //搜索建议API
 //参数%1：歌曲id
-const QString ApiOfSuggestion = "http://play.baidu.com/data/music/songinfo?songIds=%1";
+const QString ApiOfSuggestion = "http://sug.music.baidu.com/info/suggestion?format=json&word=%1&version=2&from=0";
 
 //歌曲信息API
 //参数%1：歌曲id
@@ -31,6 +31,10 @@ const QString ApiOfSongLink = "http://play.baidu.com/data/music/songlink?songIds
 
 BaiduMusic::BaiduMusic(QObject *parent) : QObject(parent)
 {
+    searchReply = 0;
+    suggestionReply = 0;
+    songInfoReply = 0;
+    songLinkReply = 0;
     manager.setCookieJar(&cookieJar);
 }
 
@@ -39,13 +43,12 @@ BaiduMusic::~BaiduMusic()
 
 }
 
-void BaiduMusic::setSearchMode(const QString& mode)
-{
-    searchMode = mode;
-}
-
 void BaiduMusic::search(const QString &keyword, int page)
 {
+    //删除原来的响应
+    if(searchReply){
+        searchReply->deleteLater();
+    }
 
     //起始位置
     int start = (page-1)*PAGESIZE;
@@ -58,53 +61,118 @@ void BaiduMusic::search(const QString &keyword, int page)
 
 void BaiduMusic::getSuggestion(QString keyword)
 {
+    if(suggestionReply){
+        suggestionReply->deleteLater();
+    }
 
+    QUrl url = QUrl(ApiOfSuggestion.arg(keyword));
+    suggestionReply = manager.get(QNetworkRequest(url));
+    connect(suggestionReply,SIGNAL(finished()),this,SLOT(suggestionReplyFinished()));
 }
 
 void BaiduMusic::getSongInfo(int songId)
 {
+    if(songInfoReply){
+        searchReply->deleteLater();
+    }
 
+    QUrl url = QUrl(ApiOfSongInfo.arg(songId));
+    songInfoReply = manager.get(QNetworkRequest(url));
+    connect(songInfoReply,SIGNAL(finished()),this,SLOT(songInfoReplyFinished()));
 }
 
 void BaiduMusic::getSongLink(int songId)
 {
+    if(songLinkReply){
+        songLinkReply->deleteLater();
+    }
 
+    QUrl url = QUrl(ApiOfSongLink.arg(songId));
+    songLinkReply = manager.get(QNetworkRequest(url));
+    connect(songLinkReply,SIGNAL(finished()),this,SLOT(songLinkReplyFinished()));
 }
 
 void BaiduMusic::searchReplyFinished()
 {
-    qDebug()<<"finished";
 
+    QString url = searchReply->request().url().toString();
+
+    int keywordBegin = url.indexOf("key=") + 4;
+    int keywordEnd = url.indexOf("&start=");
+
+    int pageBeginPos = url.indexOf("start=") + 6;
+    int pageEndPos = url.indexOf("&size=");
+
+    //当前页
+    int currentPage = url.mid(pageBeginPos,pageEndPos-pageBeginPos).toInt()/PAGESIZE + 1;
+
+    //关键字
+    QString keyword = url.mid(keywordBegin,keywordEnd-keywordBegin);
     if(searchReply->error()){
-        searchReply->deleteLater();
+		
+		//如果出错，pageCount为-1;
+        emit searchComplete(currentPage,1,keyword,"{error:"+searchReply->errorString()+"}");
         return;
     }
+
+    //TODO:未搜索到内容的判断
 
     QString html = searchReply->readAll();
     QStringList songList;
     QRegularExpression re("<li data-songitem = '(.+?)'");
     QRegularExpressionMatchIterator i = re.globalMatch(html);
-    qDebug()<<i.hasNext()<<"\n"<<html.left(300);
+
     while (i.hasNext()) {
         QRegularExpressionMatch match = i.next();
         QString songData = match.captured(1);
+        //&quot; 替换为 " ;删除<em>和</em>
         songData = songData.replace("&quot;","\"").replace("&lt;em&gt;","").replace("&lt;\\/em&gt;","");
         songList << songData;
-        qDebug()<<songData;
     }
+
+    //构造json数组
+    QString songArray = "[" + songList.join(",") + "]";
+
+    //匹配总页数
+    QRegularExpression pageCountRe("\">(\\d+)</a>\\s*<a class=\"page-navigator-next\"");
+    QRegularExpressionMatch match = pageCountRe.match(html);
+    qDebug()<<"hasMatch:"+match.hasMatch();
+    int pageCount = match.captured(1).toInt();
+
+    qDebug()<<"match 0---------------"<<match.captured(0);
+    //如果没有 pageCount，则 pageCount 设为 1;
+    pageCount = pageCount>0 ? pageCount : 1;
+
+    emit searchComplete(currentPage,pageCount,keyword,songArray);
 }
 
-void BaiduMusic::sugestionReplyFinished()
+void BaiduMusic::suggestionReplyFinished()
 {
-
+    if(suggestionReply->error()){
+        emit getSuggestionComplete("{error:"+suggestionReply->errorString()+"}");
+        return;
+    }
+    
+    emit getSuggestionComplete(suggestionReply->readAll());
 }
 
 void BaiduMusic::songInfoReplyFinished()
 {
-
+    if(songInfoReply->error()){
+        emit getSongInfoComplete("{error:"+songInfoReply->errorString()+"}");
+        return;
+    }
+    
+    emit getSongInfoComplete(songInfoReply->readAll());
 }
 
 void BaiduMusic::songLinkReplyFinished()
 {
 
+    if(songLinkReply->error()){
+        emit getSongLinkComplete("{error:"+songLinkReply->errorString()+"}");
+        return;
+    }
+    
+    emit getSongLinkComplete(songLinkReply->readAll());
 }

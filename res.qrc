@@ -3,33 +3,21 @@
         <file>qml/PlayerControler.qml</file>
         <file>qml/LyricView.qml</file>
         <file>qml/MainWindow.qml</file>
-        <file>qml/TopBar.qml</file>
         <file>qml/PlaylistView.qml</file>
         <file>qml/DisplayRegion.qml</file>
+        <file>qml/Main.qml</file>
+        <file>qml/resource/PlayButton.qml</file>
+        <file>qml/resource/NextButton.qml</file>
+        <file>qml/resource/PreviousButton.qml</file>
+        <file>qml/LeftList.qml</file>
+        <file>qml/resource/SearchBar.qml</file>
+        <file>qml/resource/SearchResult.qml</file>
+        <file>qml/resource/playlist.js</file>
     </qresource>
     <qresource prefix="/image">
-        <file>image/title.png</file>
-        <file>image/close-normal.png</file>
         <file>image/next.png</file>
         <file>image/pause.png</file>
-        <file>image/previous.png</file>
-        <file>image/slider-point.png</file>
         <file>image/play.png</file>
-        <file>image/add.png</file>
-        <file>image/volume-high-icon.png</file>
-        <file>image/volume-low-icon.png</file>
-        <file>image/volume-medium-icon.png</file>
-        <file>image/volume-mute-icon.png</file>
-        <file>image/random.png</file>
-        <file>image/sequence.png</file>
-        <file>image/defaultCover.png</file>
-        <file>image/down.png</file>
-        <file>image/up.png</file>
-        <file>image/update.png</file>
-        <file>image/clear.png</file>
-        <file>image/left.png</file>
-        <file>image/right.png</file>
-        <file>image/bkg.png</file>
-        <file>image/bkgdae.png</file>
+        <file>image/previous.png</file>
     </qresource>
 </RCC>
