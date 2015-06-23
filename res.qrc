@@ -19,5 +19,6 @@
         <file>image/pause.png</file>
         <file>image/play.png</file>
         <file>image/previous.png</file>
+        <file>image/slider-point.png</file>
     </qresource>
 </RCC>

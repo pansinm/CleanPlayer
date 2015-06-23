@@ -15,7 +15,7 @@ const int PAGESIZE = 20;
 //音乐搜索API
 //参数%1：搜索关键字
 //参数%2: 起始位置，为(page-1)*20
-const QString ApiOfSearch = "http://music.baidu.com/search?key=%1&start=%2&size=20";
+const QString ApiOfSearch = "http://music.baidu.com/search?key=%1&start=%2&size=20&s=1";
 
 //搜索建议API
 //参数%1：歌曲id
@@ -92,6 +92,13 @@ void BaiduMusic::getSongLink(int songId)
     connect(songLinkReply,SIGNAL(finished()),this,SLOT(songLinkReplyFinished()));
 }
 
+QString BaiduMusic::unifyResult(QString r)
+{
+    return r.replace(QRegularExpression("songid|songId"),"sid")
+            .replace(QRegularExpression("author|artistname"),"singer")
+            .replace(QRegularExpression("songname|songName"),"sname");
+}
+
 void BaiduMusic::searchReplyFinished()
 {
 
@@ -132,7 +139,7 @@ void BaiduMusic::searchReplyFinished()
 
     //构造json数组
     QString songArray = "[" + songList.join(",") + "]";
-
+    QString result = unifyResult(songArray);
     //匹配总页数
     QRegularExpression pageCountRe("\">(\\d+)</a>\\s*<a class=\"page-navigator-next\"");
     QRegularExpressionMatch match = pageCountRe.match(html);
@@ -143,7 +150,7 @@ void BaiduMusic::searchReplyFinished()
     //如果没有 pageCount，则 pageCount 设为 1;
     pageCount = pageCount>0 ? pageCount : 1;
 
-    emit searchComplete(currentPage,pageCount,keyword,songArray);
+    emit searchComplete(currentPage,pageCount,keyword,result);
 }
 
 void BaiduMusic::suggestionReplyFinished()
@@ -152,8 +159,8 @@ void BaiduMusic::suggestionReplyFinished()
         emit getSuggestionComplete("{error:"+suggestionReply->errorString()+"}");
         return;
     }
-    
-    emit getSuggestionComplete(suggestionReply->readAll());
+    QString sug = suggestionReply->readAll();
+    emit getSuggestionComplete(unifyResult(sug));
 }
 
 void BaiduMusic::songInfoReplyFinished()
@@ -163,7 +170,8 @@ void BaiduMusic::songInfoReplyFinished()
         return;
     }
     
-    emit getSongInfoComplete(songInfoReply->readAll());
+    QString songinfo = songInfoReply->readAll();
+    emit getSongInfoComplete(unifyResult(songinfo));
 }
 
 void BaiduMusic::songLinkReplyFinished()
@@ -174,5 +182,7 @@ void BaiduMusic::songLinkReplyFinished()
         return;
     }
     
-    emit getSongLinkComplete(songLinkReply->readAll());
+    QString songlink = songLinkReply->readAll();
+
+    emit getSongLinkComplete(unifyResult(songlink));
 }

@@ -12,14 +12,14 @@
 #include"musicinfo.h"
 #include"network.h"
 #include "baidumusic.h"
-
+#include "util.h"
 int main(int argc,char* argv[])
 {
     QApplication app(argc,argv);
     QQuickView viewer;
 
     qmlRegisterType<BaiduMusic>("CleanPlayerCore",1,0,"BaiduMusic");
-
+    qmlRegisterType<Util>("CleanPlayerCore",1,0,"Util");
     //qmlRegisterType<Playlist>("MyComponents",1,0,"Playlist");
     //qmlRegisterType<MusicInfo>("MyComponents",1,0,"MusicInfo");
     //qmlRegisterType<Network>("MyComponents",1,0,"Network");

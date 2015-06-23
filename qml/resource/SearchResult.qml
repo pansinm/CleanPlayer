@@ -10,7 +10,7 @@ Rectangle {
     property string keyword: ""
     signal playAllButtonClicked();
     signal pageChanged(int pagenum,string keyword);
-    signal itemDoubleClicked(string sid);
+    signal songDoubleClicked(var song);
 
     TableView {
         id: resultView
@@ -19,8 +19,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.bottom: bottomTools.top
         onDoubleClicked: {
-            var sid = resultModel.get(row).sid;
-            itemDoubleClicked(sid);
+            var song = resultModel.get(row);
+            songDoubleClicked(song);
         }
 
         rowDelegate: Rectangle {
@@ -39,7 +39,7 @@ Rectangle {
             width: 200
         }
         TableViewColumn {
-            role: "author"
+            role: "singer"
             title: "歌手"
             width: 100
         }
@@ -103,7 +103,7 @@ Rectangle {
         Button {
             id:prevPageButton
             enabled: false
-            text:"《"
+            text:"<<"
             width: 30
             anchors.left: playAllButton.right
             anchors.leftMargin: 30
@@ -130,7 +130,7 @@ Rectangle {
             anchors.leftMargin: 20
             anchors.verticalCenter: parent.verticalCenter
             id:nextPageButton
-            text:"》"
+            text:">>"
         }
 
     }
@@ -145,7 +145,7 @@ Rectangle {
     }
 
     //显示搜索结果
-    function showResult(curpage,pagecount,keyword_,songlist){
+    function showResult(curpage,pagecount,keyword_,songList){
         resultModel.clear();
         keyword = keyword_;
 
@@ -197,14 +197,12 @@ Rectangle {
         }
 
         try{
-            var songList = JSON.parse(songlist);
             currentPage = curpage;
             pageCount = pagecount;
             updatePageLink(currentPage,pageCount)
 
             //添加歌曲列表
             for(var i in songList){
-
                 songList[i].songItem.listIndex = parseInt(i) + 1; //序号
                 resultModel.append(songList[i].songItem);
                 console.log(JSON.stringify(songList[i].songItem));

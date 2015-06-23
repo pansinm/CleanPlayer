@@ -55,6 +55,9 @@ private:
 
     //保存所有cookie
     CookieJar cookieJar;
+
+    //同一结果，如songid转换为sid，songname转换为sname
+    QString unifyResult(QString r);
 private slots:
     void searchReplyFinished();
     void suggestionReplyFinished();

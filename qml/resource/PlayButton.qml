@@ -19,8 +19,8 @@ Rectangle {
         hoverEnabled: true
         onEntered:{
             //hover
-
         }
+
         onExited: {
            //
         }
@@ -33,7 +33,6 @@ Rectangle {
                 pause();
             }
         }
-
     }
 }
 

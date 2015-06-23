@@ -14,7 +14,8 @@ SOURCES += \
     baidumusic.cpp \
     playercontroller.cpp \
     playlist.cpp \
-    cookiejar.cpp
+    cookiejar.cpp \
+    util.cpp
 
 OTHER_FILES += \
     qml/PlayerControler.qml \
@@ -37,7 +38,8 @@ HEADERS += \
     baidumusic.h \
     playercontroller.h \
     playlist.h \
-    cookiejar.h
+    cookiejar.h \
+    util.h
 
 DISTFILES += \
     readme.md \
@@ -48,5 +50,6 @@ DISTFILES += \
     qml/LeftList.qml \
     qml/resource/SearchBar.qml \
     qml/resource/SearchResult.qml \
-    qml/resource/playlist.js
+    qml/resource/playlist.js \
+    qml/resource/Playlist.qml
 
