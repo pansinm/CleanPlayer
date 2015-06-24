@@ -50,6 +50,5 @@ DISTFILES += \
     qml/LeftList.qml \
     qml/resource/SearchBar.qml \
     qml/resource/SearchResult.qml \
-    qml/resource/playlist.js \
     qml/resource/Playlist.qml
 

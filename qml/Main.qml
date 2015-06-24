@@ -4,7 +4,6 @@ import QtMultimedia 5.4
 import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
 import "./resource"
-import "./resource/playlist.js" as Playlist
 import CleanPlayerCore 1.0
 
 Rectangle {
@@ -12,14 +11,9 @@ Rectangle {
     width:1000
     height: 600
     color: "#333333"
-    property int currentPos: -1
     MediaPlayer {
          id: mediaplayer
-         onStopped: {
-             if(mediaplayer.status == MediaPlayer.EndOfMedia){
-                 playNextSong();
-             }
-         }
+
      }
 
     //工具函数
@@ -29,25 +23,15 @@ Rectangle {
 
     BaiduMusic {
         id: baiduMusic
-
         onSearchComplete: showSearchResult(currentPage,pageCount,keyword,songList)
         onGetSuggestionComplete: showSug(suggestion)
-        onGetSongLinkComplete:{
-            var link = JSON.parse(songLink);
-            //如果获取到的链接为当前歌曲，则播放该歌曲
-            console.log(currentPos);
-            console.log(JSON.stringify(playlist[currentPlaylist]));
-            try{
 
-                if(playlist[currentPlaylist][currentPos].sid == link.data.songList[0].sid){
-                    var mp3link = link.data.songList[0].songLink;
-                    playSongLink(mp3link);
-                }
-            }catch(e){
-                console.log(e);
-            }
+    }
 
-        }
+    Playlist{
+        id:playlist
+        mediaPlayer: mediaplayer
+        baiduMusic: baiduMusic
     }
 
     //底部栏
@@ -73,7 +57,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 onPrevious: {
-                    playPrevSong();
+                   playlist.previous();
                 }
             }
             PlayButton {
@@ -81,16 +65,11 @@ Rectangle {
                 anchors.centerIn:parent
                 onPause: {
                     //暂停
-                    mediaplayer.pause();
+                    playlist.pause();
                 }
                 onPlay: {
                     //播放
-                    if(mediaplayer.source == ""){
-                        playSong(currentPos);
-                        return;
-                    }
-
-                    mediaplayer.play();
+                    playlist.play();
                 }
             }
             NextButton {
@@ -99,7 +78,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 onNext: {
                     //下一首
-                    playNextSong();
+                    playlist.next();
                 }
             }
         }
@@ -238,7 +217,9 @@ Rectangle {
             id:searchResult
             anchors.fill: parent
             onSongDoubleClicked: {
-                appendOnlineSong(song);
+                playlist.addSong(clone(song));
+                var last = playlist.count() - 1;
+                playlist.setIndex(last);
             }
             onPageChanged: {
                 baiduMusic.search(keyword,pagenum);
@@ -290,7 +271,10 @@ Rectangle {
                     onClicked: {
                         wrapper.ListView.view.currentIndex = index;
                         suggestionTips.visible = false;
-                        appendOnlineSong(suggestionModel.get(index));
+                        var song = suggestionModel.get(index);
+                        playlist.addSong(clone(song));
+                        var last = playlist.count() - 1;
+                        playlist.setIndex(last);
                     }
                 }
             }
@@ -315,55 +299,6 @@ Rectangle {
     }
 
 
-    //播放音乐连接
-    function playSongLink(mp3link){
-        mediaplayer.source = mp3link;
-        playButton.isPlaying = true;
-        mediaplayer.play();
-    }
-
-    //播放音乐
-    function playSong(index){
-        playButton.isPlaying = true;
-        currentPos = index;
-        var song = playlist[currentPlaylist][currentPos];
-        if(song.localpath){ //本地音乐
-            playMusic(song.localpath);
-            return;
-        }
-        baiduMusic.getSongLink(song.sid);
-    }
-
-    //上一首
-    function playPrevSong(){
-        if(currentPos>0){
-            currentPos--
-            playSong(currentPos);
-        }
-    }
-
-    //下一首
-    function playNextSong(){
-        if(currentPos<playlist[currentPlaylist].length-1){
-            currentPos++
-            playSong(currentPos);
-        }
-    }
-
-    //添加在线音乐
-    function appendOnlineSong(song,listname){
-        if(!song.sid){
-            return;
-        }
-
-        var name = listname ? listname : currentPlaylist;
-        console.log("song"+JSON.stringify(song));
-        playlist[name].push(clone(song));
-        if(name == currentPlaylist){
-            playSong(playlist[name].length-1);
-        }
-    }
-
     //显示搜索建议
     function showSug(sug){
         try{
@@ -380,7 +315,7 @@ Rectangle {
             suggestionTips.visible = true
 
         } catch(e){
-            console.log(e);
+            console.log("showSug:"+e);
         }
     }
 
@@ -401,17 +336,16 @@ Rectangle {
 
     //加载播放列表
     function loadPlaylist(){
-        console.log(JSON.stringify(playlist));
         //读取保存的播放列表
         var savedList = JSON.parse(util.readFile("playlist"));
         for(var i in savedList){
-            playlist[i] = savedList[i];
+            playlist.playlists[i] = savedList[i];
         }
     }
 
     //显示播放列表名称
     function showPlaylistName(){
-        for(var i in playlist){
+        for(var i in playlist.playlists){
            leftListModel.append({"listname":i});
         }
     }
@@ -450,7 +384,7 @@ Rectangle {
    //关闭时
     Component.onDestruction: {
         //保存播放列表
-        util.saveFile("playlist",JSON.stringify(playlist));
+        util.saveFile("playlist",JSON.stringify(playlist.playlists));
     }
 
     //加载结束
@@ -458,8 +392,8 @@ Rectangle {
         //加载播放列表
         loadPlaylist();
         showPlaylistName();
-        if(playlist[currentPlaylist].length>0){
-            currentPos = currentPos<0 ? 0 : currentPos;
+        if(playlist.count()>0){
+            playlist.index = 0;
         }
     }
 }

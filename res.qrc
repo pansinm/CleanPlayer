@@ -12,7 +12,7 @@
         <file>qml/LeftList.qml</file>
         <file>qml/resource/SearchBar.qml</file>
         <file>qml/resource/SearchResult.qml</file>
-        <file>qml/resource/playlist.js</file>
+        <file>qml/resource/Playlist.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/next.png</file>

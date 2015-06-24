@@ -108,6 +108,11 @@ Rectangle {
             anchors.left: playAllButton.right
             anchors.leftMargin: 30
             anchors.verticalCenter: parent.verticalCenter
+            onClicked: {
+                if(currentPage>1){
+                    pageChanged(currentPage - 1,keyword);
+                }
+            }
         }
 
         ListView {
@@ -131,6 +136,11 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             id:nextPageButton
             text:">>"
+            onClicked: {
+                if(currentPage<pageCount){
+                    pageChanged(currentPage + 1,keyword);
+                }
+            }
         }
 
     }
