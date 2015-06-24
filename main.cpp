@@ -6,11 +6,7 @@
 #include<QDebug>
 #include<QQuickItem>
 #include<QString>
-#include<lyric.h>
-//#include"playengine.h"
 
-#include"musicinfo.h"
-#include"network.h"
 #include "baidumusic.h"
 #include "util.h"
 int main(int argc,char* argv[])
@@ -20,9 +16,6 @@ int main(int argc,char* argv[])
 
     qmlRegisterType<BaiduMusic>("CleanPlayerCore",1,0,"BaiduMusic");
     qmlRegisterType<Util>("CleanPlayerCore",1,0,"Util");
-    //qmlRegisterType<Playlist>("MyComponents",1,0,"Playlist");
-    //qmlRegisterType<MusicInfo>("MyComponents",1,0,"MusicInfo");
-    //qmlRegisterType<Network>("MyComponents",1,0,"Network");
 
 
     //无边框，背景透明
@@ -31,9 +24,6 @@ int main(int argc,char* argv[])
 
     //这行不注释掉的话在XP系统无法正常显示
     //viewer.setColor(QColor(Qt::transparent));
-
-    //加载qml
-    //viewer.setSource(QUrl("qrc:/qml/qml/MainWindow.qml"));
 
     //viewer.rootContext()->setContextProperty("mainwindow",&viewer);
 

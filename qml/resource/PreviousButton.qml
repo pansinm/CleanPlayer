@@ -17,7 +17,6 @@ Rectangle {
         hoverEnabled: true
         onEntered:{
             //hover
-
         }
         onExited: {
            //

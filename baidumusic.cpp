@@ -43,6 +43,7 @@ BaiduMusic::~BaiduMusic()
 
 }
 
+//搜索关键字
 void BaiduMusic::search(const QString &keyword, int page)
 {
     //删除原来的响应

@@ -19,6 +19,12 @@ Item {
         return playlists[listname].length;
     }
 
+    //返回指定列表的歌曲
+    function getSongList(list){
+        var listname = list ? list : currentList;
+        return playlists[listname];
+    }
+
     //当前播放位置
     function currentIndex(){
         return index;
@@ -50,6 +56,8 @@ Item {
             index = -1;
             return;
         }
+
+        mediaPlayer.pause();
 
         index = i;
 
@@ -94,10 +102,8 @@ Item {
         target: baiduMusic
         //歌曲播放地址获取完毕
         onGetSongLinkComplete:{
-            var link = JSON.parse(songLink);
-            //如果获取到的链接为当前歌曲，则播放该歌曲
             try{
-
+                var link = JSON.parse(songLink);
                 //如果还是当前播放歌曲，则立即播放，否则不处理
                 if(playlists[currentList][index].sid == link.data.songList[0].sid){
                     var mp3link = link.data.songList[0].songLink;
@@ -107,7 +113,19 @@ Item {
             }catch(e){
                 console.log("getLink:"+e);
             }
+        }
 
+        onGetSongInfoComplete:{
+            try{
+                var info = JSON.parse(songInfo);
+                //返回的错误代码不争取
+                if(info.errorCode!=22000){
+                    return;
+                }
+
+            }catch(e){
+                console.log("getInfo:"+e);
+            }
         }
     }
 

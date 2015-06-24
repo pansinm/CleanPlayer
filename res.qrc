@@ -1,18 +1,13 @@
 <RCC>
     <qresource prefix="/qml">
-        <file>qml/PlayerControler.qml</file>
-        <file>qml/LyricView.qml</file>
-        <file>qml/MainWindow.qml</file>
-        <file>qml/PlaylistView.qml</file>
-        <file>qml/DisplayRegion.qml</file>
         <file>qml/Main.qml</file>
         <file>qml/resource/PlayButton.qml</file>
         <file>qml/resource/NextButton.qml</file>
         <file>qml/resource/PreviousButton.qml</file>
-        <file>qml/LeftList.qml</file>
         <file>qml/resource/SearchBar.qml</file>
         <file>qml/resource/SearchResult.qml</file>
         <file>qml/resource/Playlist.qml</file>
+        <file>qml/resource/PlaylistView.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/next.png</file>

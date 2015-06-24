@@ -135,6 +135,7 @@ Rectangle {
             }
             onKeywordChanged: baiduMusic.getSuggestion(keyword)
             onBeforeSearch: {
+                container.containerId = "searchResult";
                 baiduMusic.search(keyword,1);
                 suggestionTips.visible = false;
             }
@@ -174,6 +175,17 @@ Rectangle {
                         anchors.centerIn: parent
                         text:listname
                     }
+
+                    MouseArea{
+                        id:mouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked:{
+                            leftListView.currentIndex = index;
+                            playlistView.updateList(listname);
+                            container.containerId = "playlistView";
+                        }
+                    }
                 }
             }
         }
@@ -187,6 +199,26 @@ Rectangle {
             anchors.fill: parent
             delegate: leftListViewDelegate
             model: leftListModel
+            clip: true
+            focus: true
+
+            highlight:Component{
+                Rectangle{
+                    radius:3
+                    gradient: Gradient {
+                        GradientStop {
+                            position: 0.00;
+                            color: "#80a9ccf3";
+                        }
+                        GradientStop {
+                            position: 1.00;
+                            color: "#808abae6";
+                        }
+                    }
+
+                }
+            }
+
             header: Component {
                 Item {
                     width: 200
@@ -213,6 +245,7 @@ Rectangle {
         anchors.left: leftList.right
         anchors.bottom: bottomBar.top
         anchors.right: parent.right
+        property string containerId: "searchResult";
         SearchResult {
             id:searchResult
             anchors.fill: parent
@@ -225,7 +258,31 @@ Rectangle {
                 baiduMusic.search(keyword,pagenum);
             }
         }
+        PlaylistView{
+            id:playlistView
+            playlist: playlist
+            anchors.fill: parent
+            visible: false
+        }
 
+        onContainerIdChanged: {
+            var items = container.children;
+           var showIndex = 0;
+            if(containerId == "searchResult"){
+                showIndex = 0;
+            }
+            else if(containerId == "playlistView"){
+                showIndex = 1;
+            }
+
+           for(var i=0;i<items.length;i++){
+               if(i == showIndex){
+                   items[i].visible = true;
+               }else{
+                   items[i].visible = false;
+               }
+           }
+        }
     }
 
     //搜索建议弹出框
@@ -308,9 +365,9 @@ Rectangle {
             suggestionModel.clear();
 
             for(var i in songs){
-
+                //转换为字符串
+                songs[i].sid = "" + songs[i].sid;
                 suggestionModel.append(songs[i]);
-                 console.log("sug:"+JSON.stringify(songs[i]));
             }
             suggestionTips.visible = true
 

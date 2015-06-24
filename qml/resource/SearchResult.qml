@@ -8,7 +8,6 @@ Rectangle {
     property int currentPage: 1
     property int pageCount: 1
     property string keyword: ""
-    signal playAllButtonClicked();
     signal pageChanged(int pagenum,string keyword);
     signal songDoubleClicked(var song);
 
@@ -61,19 +60,6 @@ Rectangle {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
 
-        //搜索按钮
-        Button {
-            id:playAllButton
-            height: parent.height - 6
-            width: 60
-            anchors.left : parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: "播放全部"
-            onClicked:  {
-                playAllButtonClicked();
-            }
-        }
-
 
         Component {
             id:pageDelegate
@@ -105,7 +91,7 @@ Rectangle {
             enabled: false
             text:"<<"
             width: 30
-            anchors.left: playAllButton.right
+            anchors.left: parent.left
             anchors.leftMargin: 30
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
@@ -161,7 +147,7 @@ Rectangle {
 
         //更新页面链接,只显示3页
         function updatePageLink(cur,count){
-            pageModel.clear()
+            pageModel.clear();
             console.log("cur:"+cur+"count:"+count);
 
             //显示的第一页和最后一页
@@ -210,12 +196,11 @@ Rectangle {
             currentPage = curpage;
             pageCount = pagecount;
             updatePageLink(currentPage,pageCount)
-
             //添加歌曲列表
             for(var i in songList){
                 songList[i].songItem.listIndex = parseInt(i) + 1; //序号
+                songList[i].songItem.sid = "" + songList[i].songItem.sid; //sid转换为字符串
                 resultModel.append(songList[i].songItem);
-                console.log(JSON.stringify(songList[i].songItem));
             }
         }catch(e){
             console.log(e);
