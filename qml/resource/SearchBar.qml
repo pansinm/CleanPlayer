@@ -5,6 +5,7 @@ import QtQuick.Controls 1.3
 Rectangle {
     width: 300
     height: 30
+    radius: 15
 
     signal textCleared()
     signal keywordChanged(string keyword)
@@ -15,9 +16,10 @@ Rectangle {
     TextInput {
         id:input
         anchors.left: parent.left
+        anchors.leftMargin: 12
         anchors.right: searchButton.left
         anchors.verticalCenter: parent.verticalCenter
-        font.pixelSize:16
+        font.pixelSize:15
         clip: true
 
         //输入改变
@@ -40,12 +42,22 @@ Rectangle {
     }
 
     //搜索按钮
-    Button {
+    Rectangle {
         id:searchButton
-        height: parent.height
-        width: 50
+        height: 20
+        width: 20
         anchors.right: parent.right
-        onClicked:  toSearch()
+        anchors.rightMargin: 14
+        anchors.verticalCenter: parent.verticalCenter
+        Image {
+            id: searchIcon
+            anchors.fill: parent
+            source: "qrc:/image/image/search.png"
+        }
+        MouseArea{
+            anchors.fill: parent
+            onClicked:  toSearch()
+        }
     }
 
     //点击搜索按钮或按Enter

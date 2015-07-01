@@ -53,7 +53,6 @@ Item {
     function setIndex(i){
         console.log("setIndex:"+i + "  length:" + playlists[currentList].length);
         if(i<0 || i>(playlists[currentList].length - 1)){
-            index = -1;
             return;
         }
 

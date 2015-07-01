@@ -1,13 +1,11 @@
 <RCC>
     <qresource prefix="/qml">
         <file>qml/Main.qml</file>
-        <file>qml/resource/PlayButton.qml</file>
-        <file>qml/resource/NextButton.qml</file>
-        <file>qml/resource/PreviousButton.qml</file>
         <file>qml/resource/SearchBar.qml</file>
         <file>qml/resource/SearchResult.qml</file>
         <file>qml/resource/Playlist.qml</file>
         <file>qml/resource/PlaylistView.qml</file>
+        <file>qml/resource/BottomController.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/next.png</file>
@@ -15,5 +13,10 @@
         <file>image/play.png</file>
         <file>image/previous.png</file>
         <file>image/slider-point.png</file>
+        <file>image/search.png</file>
+        <file>image/volume-high-icon.png</file>
+        <file>image/volume-low-icon.png</file>
+        <file>image/volume-medium-icon.png</file>
+        <file>image/volume-mute-icon.png</file>
     </qresource>
 </RCC>

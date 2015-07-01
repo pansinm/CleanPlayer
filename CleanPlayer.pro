@@ -31,8 +31,8 @@ DISTFILES += \
     qml/Main.qml \
     qml/resource/PlayButton.qml \
     qml/resource/PreviousButton.qml \
-    qml/resource/NextButton.qml \
     qml/resource/SearchBar.qml \
     qml/resource/SearchResult.qml \
     qml/resource/Playlist.qml \
-    qml/resource/PlaylistView.qml
+    qml/resource/PlaylistView.qml \
+    qml/resource/BottomController.qml

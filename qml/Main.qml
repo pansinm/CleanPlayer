@@ -1,5 +1,4 @@
 import QtQuick 2.4
-import QtQuick.Controls 1.2
 import QtMultimedia 5.4
 import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
@@ -35,68 +34,14 @@ Rectangle {
     }
 
     //底部栏
-    Rectangle {
+    BottomController {
         id:bottomBar
+        mediaPlayer: mediaplayer
+        playlist: playlist
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         width: parent.width
-        height: 80
         color: "#444444"
-
-        //播放、上一首、下一首
-        Rectangle {
-            id: playController
-            width: 180
-            height: parent.height
-            color: "#00000000"
-            anchors.leftMargin: 20
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            PreviousButton {
-                id:previousButton
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                onPrevious: {
-                   playlist.previous();
-                }
-            }
-            PlayButton {
-                id:playButton
-                anchors.centerIn:parent
-                onPause: {
-                    //暂停
-                    playlist.pause();
-                }
-                onPlay: {
-                    //播放
-                    playlist.play();
-                }
-            }
-            NextButton {
-                id:nextButton
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                onNext: {
-                    //下一首
-                    playlist.next();
-                }
-            }
-        }
-
-        //进度条
-        Slider {
-            id:slider
-            x:15
-            anchors.left: playController.right
-            anchors.leftMargin: 15
-            anchors.right: parent.right
-            anchors.rightMargin: 15
-            anchors.verticalCenter: parent.verticalCenter
-            maximumValue:50
-            value: 20
-            stepSize:0.5
-        }
-
     }
 
 
@@ -291,9 +236,9 @@ Rectangle {
         anchors.top: topBar.bottom
         anchors.topMargin: -5
         anchors.left: topBar.left
-        anchors.leftMargin: 220
+        anchors.leftMargin: 230
         z:300
-        height: 400
+        height: 200
         width: 200
         color: "white"
         visible: false
@@ -344,6 +289,7 @@ Rectangle {
             model: suggestionModel
             delegate: suggestionDelegate
             highlight: highlightBar
+            clip: true
         }
     }
 

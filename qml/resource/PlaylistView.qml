@@ -48,7 +48,7 @@ Rectangle {
         listModel.clear();
         var list = playlist.getSongList(listname);
         for(var i=0;i<list.length;i++){
-            console.log("update"+JSON.stringify(list[i]));
+            list[i].listIndex = i + 1;
             listModel.append(list[i]);
         }
     }

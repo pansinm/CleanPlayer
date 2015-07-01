@@ -144,10 +144,10 @@ void BaiduMusic::searchReplyFinished()
     //匹配总页数
     QRegularExpression pageCountRe("\">(\\d+)</a>\\s*<a class=\"page-navigator-next\"");
     QRegularExpressionMatch match = pageCountRe.match(html);
-    qDebug()<<"hasMatch:"+match.hasMatch();
+
+    //页面总数
     int pageCount = match.captured(1).toInt();
 
-    qDebug()<<"match 0---------------"<<match.captured(0);
     //如果没有 pageCount，则 pageCount 设为 1;
     pageCount = pageCount>0 ? pageCount : 1;
 
