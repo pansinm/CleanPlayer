@@ -2,6 +2,11 @@
 因为工作的原因，好久没有更新了。
 从今天开始，将调整项目结构，完善注释，定期更新。
 
+### dev分支
+	
+	git clone https://github.com/pansinm/CleanPlayer.git
+	git checkout dev
+
 ###功能
 1. 常规的播放和列表功能；
 2. 自动在线匹配歌词和专辑封面；
