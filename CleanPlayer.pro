@@ -7,32 +7,37 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    lyric.cpp \
-    id3v1tags.cpp \
-    playlist.cpp \
-    musicinfo.cpp \
-    network.cpp
+    baidumusic.cpp \
+    cookiejar.cpp \
+    util.cpp
 
 OTHER_FILES += \
     qml/PlayerControler.qml \
     qml/LyricView.qml \
     updatesummary.txt \
     qml/MainWindow.qml \
-    qml/TopBar.qml \
-    qml/PlaylistView.qml \
-    qml/DisplayRegion.qml
+    qml/TopBar.qml
 
 RESOURCES += \
     res.qrc \
 
 HEADERS += \
-    lyric.h \
-    id3v1tags.h \
-    id3v1tagsdef.h \
-    playlist.h \
-    musicinfo.h \
-    network.h
+    baidumusic.h \
+    cookiejar.h \
+    util.h
 
 DISTFILES += \
-    readme.md
-
+    readme.md \
+    qml/Main.qml \
+    qml/resource/PlayButton.qml \
+    qml/resource/PreviousButton.qml \
+    qml/resource/SearchBar.qml \
+    qml/resource/SearchResult.qml \
+    qml/resource/Playlist.qml \
+    qml/resource/PlaylistView.qml \
+    qml/resource/TopBar.qml \
+    qml/resource/Suggestion.qml \
+    qml/resource/Container.qml \
+    qml/resource/func.js \
+    qml/resource/BottomBar.qml \
+    qml/resource/SideBar.qml
