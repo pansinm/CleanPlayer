@@ -35,4 +35,9 @@ DISTFILES += \
     qml/resource/SearchResult.qml \
     qml/resource/Playlist.qml \
     qml/resource/PlaylistView.qml \
-    qml/resource/BottomController.qml
+    qml/resource/TopBar.qml \
+    qml/resource/Suggestion.qml \
+    qml/resource/Container.qml \
+    qml/resource/func.js \
+    qml/resource/BottomBar.qml \
+    qml/resource/SideBar.qml

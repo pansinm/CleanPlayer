@@ -10,6 +10,7 @@ Rectangle {
     width:1000
     height: 600
     color: "#333333"
+
     MediaPlayer {
          id: mediaplayer
 
@@ -20,381 +21,108 @@ Rectangle {
         id:util
     }
 
+    //百度音乐Api
     BaiduMusic {
         id: baiduMusic
-        onSearchComplete: showSearchResult(currentPage,pageCount,keyword,songList)
-        onGetSuggestionComplete: showSug(suggestion)
-
     }
 
+    //播放列表
     Playlist{
         id:playlist
         mediaPlayer: mediaplayer
         baiduMusic: baiduMusic
+        util:util
+    }
+
+    //顶栏
+    TopBar{
+        id:topBar
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        baiduMusic: baiduMusic
+        suggestion: suggestion
     }
 
     //底部栏
-    BottomController {
+    BottomBar {
         id:bottomBar
-        mediaPlayer: mediaplayer
-        playlist: playlist
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         width: parent.width
         color: "#444444"
+
+        mediaPlayer: mediaplayer
+        playlist: playlist
+        baiduMusic: baiduMusic
     }
 
+    //边栏
+    SideBar{
+        id:sideBar
 
-    //顶部栏
-    Rectangle {
-        id:topBar
-        width: parent.width
-        height: 60
-        color: "#444444"
-        anchors.left: parent.left
-        anchors.top: parent.top
-
-        //左上角
-        Rectangle {
-            id: brand
-            width: 200
-            height: parent.height
-            anchors.top: parent.top
-            anchors.left: parent.left
-            Text {
-                id: brandText
-                font.pixelSize:28
-                text: qsTr("CleanPlayer")
-                anchors.centerIn: parent
-            }
-        }
-
-        //搜索条
-        SearchBar {
-            anchors.left: brand.right
-            anchors.leftMargin: 15
-            anchors.verticalCenter: parent.verticalCenter
-
-            onTextCleared: {
-                suggestionTips.visible = false;
-            }
-            onKeywordChanged: baiduMusic.getSuggestion(keyword)
-            onBeforeSearch: {
-                container.containerId = "searchResult";
-                baiduMusic.search(keyword,1);
-                suggestionTips.visible = false;
-            }
-            onTextFocusOut: {
-                suggestionTips.visible = false;
-            }
-        }
-
-
-        //边条
-        Rectangle {
-            width: parent.width
-            height: 2
-            color: "#E61E16"
-            anchors.bottom: parent.bottom
-        }
-    }
-
-    //左侧栏
-    Rectangle {
-        id: leftList
-        width: 200
-        color: "#555555"
         anchors.left: parent.left
         anchors.top: topBar.bottom
         anchors.bottom: bottomBar.top
 
-        Component {
-            id:leftListViewDelegate
-            Item {
-                width: 200
-                height: 20
-                Rectangle{
-                    anchors.fill: parent
-                    color:"gray"
-                    Text {
-                        anchors.centerIn: parent
-                        text:listname
-                    }
+        playlist: playlist
+        container: container
+    }
 
-                    MouseArea{
-                        id:mouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked:{
-                            leftListView.currentIndex = index;
-                            playlistView.updateList(listname);
-                            container.containerId = "playlistView";
-                        }
-                    }
-                }
-            }
-        }
+    //搜索建议
+    Suggestion{
+        id:suggestion
 
-        ListModel {
-            id:leftListModel
-        }
+        anchors.left:sideBar.right
+        anchors.leftMargin: 28
+        anchors.top: topBar.bottom
+        anchors.topMargin: -15
 
-        ListView {
-            id:leftListView
-            anchors.fill: parent
-            delegate: leftListViewDelegate
-            model: leftListModel
-            clip: true
-            focus: true
+        z:100
 
-            highlight:Component{
-                Rectangle{
-                    radius:3
-                    gradient: Gradient {
-                        GradientStop {
-                            position: 0.00;
-                            color: "#80a9ccf3";
-                        }
-                        GradientStop {
-                            position: 1.00;
-                            color: "#808abae6";
-                        }
-                    }
-
-                }
-            }
-
-            header: Component {
-                Item {
-                    width: 200
-                    height: 30
-                    Rectangle{
-                        anchors.fill: parent
-                        color:"white"
-                        Text {
-                            anchors.centerIn: parent
-                            font.pixelSize:16
-                            text:"播放列表"
-                        }
-                    }
-                }
-            }
-        }
-
+        baiduMusic: baiduMusic
+        playlist: playlist
     }
 
     //内容区域
-    Rectangle {
+    Container{
         id:container
+
+        anchors.left:sideBar.right
         anchors.top: topBar.bottom
-        anchors.left: leftList.right
         anchors.bottom: bottomBar.top
         anchors.right: parent.right
-        property string containerId: "searchResult";
-        SearchResult {
-            id:searchResult
-            anchors.fill: parent
-            onSongDoubleClicked: {
-                playlist.addSong(clone(song));
-                var last = playlist.count() - 1;
-                playlist.setIndex(last);
-            }
-            onPageChanged: {
-                baiduMusic.search(keyword,pagenum);
-            }
-        }
-        PlaylistView{
-            id:playlistView
-            playlist: playlist
-            anchors.fill: parent
-            visible: false
-        }
 
-        onContainerIdChanged: {
-            var items = container.children;
-           var showIndex = 0;
-            if(containerId == "searchResult"){
-                showIndex = 0;
-            }
-            else if(containerId == "playlistView"){
-                showIndex = 1;
-            }
-
-           for(var i=0;i<items.length;i++){
-               if(i == showIndex){
-                   items[i].visible = true;
-               }else{
-                   items[i].visible = false;
-               }
-           }
-        }
-    }
-
-    //搜索建议弹出框
-    Rectangle {
-        id: suggestionTips
-        anchors.top: topBar.bottom
-        anchors.topMargin: -5
-        anchors.left: topBar.left
-        anchors.leftMargin: 230
-        z:300
-        height: 200
-        width: 200
-        color: "white"
-        visible: false
-
-        ListModel {
-            id: suggestionModel
-        }
-
-        Component {
-            id: highlightBar
-            Rectangle {
-                width: 200; height: 50
-                color: "#FFFF88"
-                y: suggestionView.currentItem.y;
-            }
-
-        }
-
-        Component  {
-            id: suggestionDelegate
-            Item {
-                id: wrapper
-                width:200
-                height: 20
-                Rectangle{
-                    Text {
-                        text: sname + '-' + singer
-                    }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        wrapper.ListView.view.currentIndex = index;
-                        suggestionTips.visible = false;
-                        var song = suggestionModel.get(index);
-                        playlist.addSong(clone(song));
-                        var last = playlist.count() - 1;
-                        playlist.setIndex(last);
-                    }
-                }
-            }
-        }
-
-        ListView {
-            id:suggestionView
-            height: parent.height
-            width: parent.width
-            model: suggestionModel
-            delegate: suggestionDelegate
-            highlight: highlightBar
-            clip: true
-        }
+        baiduMusic: baiduMusic
+        playlist: playlist
     }
 
     MouseArea{
         anchors.fill: parent
         z:-1
         onClicked: {
-            suggestionTips.visible = false;
+            suggestion.hide();
         }
     }
 
 
-    //显示搜索建议
-    function showSug(sug){
-        try{
-            var suggestion = JSON.parse(sug);
-            var data = suggestion.data
-            var songs = data.song
-            suggestionModel.clear();
 
-            for(var i in songs){
-                //转换为字符串
-                songs[i].sid = "" + songs[i].sid;
-                suggestionModel.append(songs[i]);
-            }
-            suggestionTips.visible = true
 
-        } catch(e){
-            console.log("showSug:"+e);
-        }
-    }
-
-    //显示搜索结果
-    function showSearchResult(cur,count,keyword,songlist){
-        try{
-            var songList = JSON.parse(songlist);
-            //如果错误
-            if(songList.error){
-                //TODO:搜索出错
-            }
-        }catch(e){
-            console.log(e);
-            return;
-        }
-        searchResult.showResult(cur,count,keyword,songList)
-    }
-
-    //加载播放列表
-    function loadPlaylist(){
-        //读取保存的播放列表
-        var savedList = JSON.parse(util.readFile("playlist"));
-        for(var i in savedList){
-            playlist.playlists[i] = savedList[i];
-        }
-    }
-
-    //显示播放列表名称
-    function showPlaylistName(){
-        for(var i in playlist.playlists){
-           leftListModel.append({"listname":i});
-        }
-    }
-
-    //对象克隆
-    function clone(obj){
-        var o;
-        switch(typeof obj){
-        case 'undefined': break;
-        case 'string'   : o = obj + '';break;
-        case 'number'   : o = obj - 0;break;
-        case 'boolean'  : o = obj;break;
-        case 'object'   :
-            if(obj === null){
-                o = null;
-            }else{
-                if(obj instanceof Array){
-                    o = [];
-                    for(var i = 0, len = obj.length; i < len; i++){
-                        o.push(clone(obj[i]));
-                    }
-                }else{
-                    o = {};
-                    for(var k in obj){
-                        o[k] = clone(obj[k]);
-                    }
-                }
-            }
-            break;
-        default:
-            o = obj;break;
-        }
-        return o;
-    }
 
    //关闭时
     Component.onDestruction: {
         //保存播放列表
-        util.saveFile("playlist",JSON.stringify(playlist.playlists));
+        playlist.saveTo("playlist");
     }
 
     //加载结束
     Component.onCompleted: {
         //加载播放列表
-        loadPlaylist();
-        showPlaylistName();
+        playlist.loadFrom("playlist");
+        sideBar.update();
+
+        //列表中第一首为默认播放歌曲
         if(playlist.count()>0){
             playlist.index = 0;
         }

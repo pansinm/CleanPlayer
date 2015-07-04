@@ -1,5 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.3
+import CleanPlayerCore 1.0
+import "func.js" as Func
 
 //搜索结果
 Rectangle {
@@ -8,8 +10,9 @@ Rectangle {
     property int currentPage: 1
     property int pageCount: 1
     property string keyword: ""
-    signal pageChanged(int pagenum,string keyword);
-    signal songDoubleClicked(var song);
+    property BaiduMusic baiduMusic
+    property Playlist playlist
+
 
     TableView {
         id: resultView
@@ -19,13 +22,16 @@ Rectangle {
         anchors.bottom: bottomTools.top
         onDoubleClicked: {
             var song = resultModel.get(row);
-            songDoubleClicked(song);
+            playlist.addSong(Func.objClone(song));
+            var last = playlist.count() - 1;
+            playlist.setIndex(last);
         }
 
         rowDelegate: Rectangle {
             height: 25
             color: styleData.selected ? "#448" : (styleData.alternate? "#eee" : "#fff")
         }
+
         TableViewColumn {
             role:"listIndex"
             title:"  "
@@ -74,7 +80,7 @@ Rectangle {
                         var pagenum = parseInt(link);
                         console.log(pagenum);
                         if(pagenum){
-                            pageChanged(pagenum,keyword);
+                            baiduMusic.search(keyword,pagenum);
                         }
                     }
                 }
@@ -96,7 +102,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
                 if(currentPage>1){
-                    pageChanged(currentPage - 1,keyword);
+                    baiduMusic.search(keyword,currentPage - 1);
                 }
             }
         }
@@ -124,11 +130,10 @@ Rectangle {
             text:">>"
             onClicked: {
                 if(currentPage<pageCount){
-                    pageChanged(currentPage + 1,keyword);
+                    baiduMusic.search(keyword,currentPage + 1);
                 }
             }
         }
-
     }
 
     //返回
@@ -141,7 +146,7 @@ Rectangle {
     }
 
     //显示搜索结果
-    function showResult(curpage,pagecount,keyword_,songList){
+    function setResultInfo(curpage,pagecount,keyword_,songList){
         resultModel.clear();
         keyword = keyword_;
 
@@ -203,7 +208,7 @@ Rectangle {
                 resultModel.append(songList[i].songItem);
             }
         }catch(e){
-            console.log(e);
+            console.log("SearchResult[setResultInfo:]"+e);
         }
     }
 }

@@ -8,7 +8,6 @@ Rectangle {
     property Playlist playlist
 
     TableView {
-        id: resultView
         width: parent.width
         anchors.fill: parent
         onDoubleClicked: {
@@ -44,7 +43,7 @@ Rectangle {
     }
 
     //更新列表
-    function updateList(listname){
+    function update(listname){
         listModel.clear();
         var list = playlist.getSongList(listname);
         for(var i=0;i<list.length;i++){

@@ -33,13 +33,13 @@ public:
      * @brief getSongInfo 获取歌曲信息
      * @param songId
      */
-    Q_INVOKABLE void getSongInfo(int songId);
+    Q_INVOKABLE void getSongInfo(QString songId);
 
     /**
      * @brief getSongLink 获取歌曲链接，包括下载链接和歌词连接等
      * @param songId
      */
-    Q_INVOKABLE void getSongLink(int songId);
+    Q_INVOKABLE void getSongLink(QString songId);
 
 private:
     QNetworkAccessManager manager;

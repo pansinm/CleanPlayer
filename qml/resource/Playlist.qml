@@ -3,11 +3,13 @@ import QtMultimedia 5.4
 import CleanPlayerCore 1.0
 
 Item {
-    property int index: 0
+    property int index: -1
     property var playlists: {"默认列表":[]}  //播放列表，默认加载【默认列表】
     property string currentList: "默认列表"
     property MediaPlayer mediaPlayer
     property BaiduMusic baiduMusic
+    property Util util
+
 
     //列表中的歌曲数目
     function count(list){
@@ -17,6 +19,11 @@ Item {
             playlists[listname] = [];
         }
         return playlists[listname].length;
+    }
+
+    function getSong(i,list){
+        var listname = list ? list : currentList;
+        return playlists[listname][i];
     }
 
     //返回指定列表的歌曲
@@ -69,6 +76,8 @@ Item {
 
         //如果不是本地音乐，则获取歌曲链接
         baiduMusic.getSongLink(playlists[currentList][index].sid);
+        //获取专辑图片
+        baiduMusic.getSongInfo(playlists[currentList][index].sid);
     }
 
     //下一首
@@ -96,6 +105,23 @@ Item {
         mediaPlayer.pause();
     }
 
+    //从文件加载列表
+    function loadFrom(filename){
+        try{
+            var savedList = JSON.parse(util.readFile(filename));
+            for(var i in savedList){
+                playlists[i] = savedList[i];
+            }
+            index = 0;
+        }catch(e){
+            console.log("Playlist[loadFrom]:"+e);
+        }
+    }
+
+    //保存文件
+    function saveTo(filename){
+        util.saveFile(filename,JSON.stringify(playlist.playlists));
+    }
 
     Connections{
         target: baiduMusic
@@ -111,19 +137,6 @@ Item {
                 }
             }catch(e){
                 console.log("getLink:"+e);
-            }
-        }
-
-        onGetSongInfoComplete:{
-            try{
-                var info = JSON.parse(songInfo);
-                //返回的错误代码不争取
-                if(info.errorCode!=22000){
-                    return;
-                }
-
-            }catch(e){
-                console.log("getInfo:"+e);
             }
         }
     }

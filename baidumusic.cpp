@@ -71,10 +71,10 @@ void BaiduMusic::getSuggestion(QString keyword)
     connect(suggestionReply,SIGNAL(finished()),this,SLOT(suggestionReplyFinished()));
 }
 
-void BaiduMusic::getSongInfo(int songId)
+void BaiduMusic::getSongInfo(QString songId)
 {
     if(songInfoReply){
-        searchReply->deleteLater();
+        songInfoReply->deleteLater();
     }
 
     QUrl url = QUrl(ApiOfSongInfo.arg(songId));
@@ -82,7 +82,7 @@ void BaiduMusic::getSongInfo(int songId)
     connect(songInfoReply,SIGNAL(finished()),this,SLOT(songInfoReplyFinished()));
 }
 
-void BaiduMusic::getSongLink(int songId)
+void BaiduMusic::getSongLink(QString songId)
 {
     if(songLinkReply){
         songLinkReply->deleteLater();
@@ -172,7 +172,7 @@ void BaiduMusic::songInfoReplyFinished()
     }
     
     QString songinfo = songInfoReply->readAll();
-    emit getSongInfoComplete(unifyResult(songinfo));
+    emit getSongInfoComplete(songinfo);
 }
 
 void BaiduMusic::songLinkReplyFinished()

@@ -3,12 +3,32 @@ import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
 import QtMultimedia 5.4
 
+import CleanPlayerCore 1.0
+
 Rectangle {
     height: 60
     color: "#444444"
+
+    property bool isPlaying: false
     property MediaPlayer mediaPlayer
     property Playlist playlist
-    property bool isPlaying: false
+    property BaiduMusic baiduMusic
+
+    Rectangle{
+        id: songPicWrapper
+        width: parent.height - 10
+        height: parent.height - 10
+
+        anchors.left: parent.left
+        anchors.leftMargin: 5
+        anchors.top: parent.top
+        anchors.topMargin: 5
+
+        Image{
+            id:songPic
+            anchors.fill: parent
+        }
+    }
 
     //播放、上一首、下一首
     Rectangle {
@@ -17,7 +37,7 @@ Rectangle {
         height: parent.height
         color: "#00000000"
         anchors.leftMargin: 20
-        anchors.left: parent.left
+        anchors.left: songPicWrapper.right
         anchors.bottom: parent.bottom
 
         Rectangle {
@@ -107,7 +127,63 @@ Rectangle {
     }
 
     Rectangle{
+        id:currentSongInfo
+        height: 45
+        width: 120
+        color: "#00000000"
+        clip: true
+        anchors.verticalCenter: parent.verticalCenter
         anchors.left: playController.right
+        anchors.leftMargin: 15
+
+        Text{
+            id: sname
+            height: 15
+            color: "white"
+            anchors.left: parent.left
+            anchors.top: parent.top
+            text: ""
+        }
+        Text {
+            id: singer
+            height: 15
+            color: "white"
+            anchors.left: parent.left
+            anchors.top: sname.bottom
+            text:"歌手:"
+        }
+        Text {
+            id: album
+            height: 15
+            color: "white"
+            anchors.left: parent.left
+            anchors.top: singer.bottom
+            text:"专辑:"
+        }
+
+        function setSongName(name){
+            sname.text = name;
+        }
+
+        function setSinger(singername){
+            singer.text = "歌手:" + singername;
+        }
+
+        function setAlbum(albumname){
+            album.text = "专辑:" + albumname;
+        }
+
+        //清空信息
+        function clear(){
+            sname.text = "";
+            singer.text = "歌手:";
+            album.text = "专辑:";
+        }
+
+    }
+
+    Rectangle{
+        anchors.left: currentSongInfo.right
         anchors.leftMargin: 15
         anchors.right: volumeControler.left
         anchors.rightMargin: 15
@@ -232,7 +308,7 @@ Rectangle {
            stepSize:0.02
            onValueChanged: {
                mediaPlayer.volume = volumeSlider.value
-               setSource();
+               setVolumeIcon();
                if(mediaPlayer.muted){
                    mediaPlayer.muted=false;
                }
@@ -255,8 +331,8 @@ Rectangle {
            }
 
 
-
-           function setSource(){
+            //设置音量图标
+           function setVolumeIcon(){
                if(value>0.8){
                    volumeImg.source="qrc:/image/image/volume-high-icon.png";
                }
@@ -314,8 +390,38 @@ Rectangle {
             }
             else{
                volumeSlider.value=mediaPlayer.volume;
-               volumeSlider.setSource();
+               volumeSlider.setVolumeIcon();
             }
+        }
+    }
+
+    Connections{
+        target: baiduMusic
+        onGetSongInfoComplete: {
+            try{
+                var songinfo = JSON.parse(songInfo);
+                var  currentSong = songinfo.data.songList[0]
+                var picLink = currentSong.songPicSmall;
+                var queryId = currentSong.queryId;
+                if(playlist.getSong(playlist.currentIndex()).sid == queryId){
+                    //设置歌曲图片
+                    songPic.source = picLink;
+                    //设置专辑名称
+                    currentSongInfo.setAlbum(currentSong.albumName);
+                }
+            }catch(e){
+                console.log("BottomBar[onGetSongInfoComplete]:"+e);
+            }
+        }
+    }
+
+    Connections{
+        target: playlist
+        onIndexChanged: {
+            currentSongInfo.clear();
+            var song = playlist.getSong(playlist.index);
+            currentSongInfo.setSongName(song.sname);
+            currentSongInfo.setSinger(song.singer);
         }
     }
 }

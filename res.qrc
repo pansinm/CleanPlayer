@@ -1,11 +1,15 @@
 <RCC>
     <qresource prefix="/qml">
         <file>qml/Main.qml</file>
-        <file>qml/resource/SearchBar.qml</file>
         <file>qml/resource/SearchResult.qml</file>
         <file>qml/resource/Playlist.qml</file>
         <file>qml/resource/PlaylistView.qml</file>
-        <file>qml/resource/BottomController.qml</file>
+        <file>qml/resource/BottomBar.qml</file>
+        <file>qml/resource/Container.qml</file>
+        <file>qml/resource/func.js</file>
+        <file>qml/resource/Suggestion.qml</file>
+        <file>qml/resource/TopBar.qml</file>
+        <file>qml/resource/SideBar.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/next.png</file>
