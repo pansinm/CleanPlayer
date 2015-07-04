@@ -1,7 +1,12 @@
 ##Clean Player
 
-
+---
 基于Qt4.5.1重新编写整个程序，支持歌曲搜索、在线播放。
+
+### TODO
+
+1. 歌词
+2. 自定义列表
 
 ### dev分支
 
@@ -12,13 +17,12 @@
 
         git checkout v0.4.2
 
-***
 ###外观
 ![](./doc/image/appearence.png)
 
-***
 ###百度音乐API
 + 搜索建议
+
         http://sug.music.baidu.com/info/suggestion?format=json&word=关键字&version=2&from=0&callback=函数名
 + 搜索（需要从html中截取有效信息）
     
@@ -31,7 +35,6 @@
 + 歌曲链接
 
         http://play.baidu.com/data/music/songlink?songIds=歌曲id&type=m4a,mp3
-***
 
 
 ###其他
