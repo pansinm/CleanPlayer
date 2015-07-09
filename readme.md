@@ -1,7 +1,7 @@
 ##Clean Player
 
 ---
-CleanPlayer是Baidu在线音乐的一个客户端程序，基于Qt4.5，支持歌曲搜索、在线播放。
+CleanPlayer是Baidu在线音乐的一个客户端程序，基于Qt5.4，支持歌曲搜索、在线播放。
 
 ### TODO
 
@@ -38,7 +38,7 @@ CleanPlayer是Baidu在线音乐的一个客户端程序，基于Qt4.5，支持�
 
 
 ###其他
-1. 基于[QT5.2.1](http://qt-project.org/downloads)，遵守[LGPL协议](http://www.gnu.org/licenses/lgpl.html)；
+1. 基于[QT5.4](http://qt-project.org/downloads)，遵守[LGPL协议](http://www.gnu.org/licenses/lgpl.html)；
 2. 软件由QML结合C++编写而成，QML编写界面，C++编写网络、文件读写；
 3. 此程序只作为学习交流使用;
 4. 旧版Clean Player[下载地址](http://pan.baidu.com/s/1bns3lld).

@@ -106,10 +106,6 @@ Rectangle {
         }
     }
 
-
-
-
-
    //关闭时
     Component.onDestruction: {
         //保存播放列表
