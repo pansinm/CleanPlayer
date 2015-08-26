@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Exec=/usr/bin/clean-player
+Name[zh_CN]=clean player
+Comment[zh_CN]=Baidu Online Music Player Client
+Name=clean-player
+Comment=Baidu Online Music Player Client
+Icon=clean-player
+Categories=AudioVideo;Player;QT;
