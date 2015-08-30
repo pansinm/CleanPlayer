@@ -1,7 +1,9 @@
 ##Clean Player
 
 ---
-CleanPlayer是Baidu音乐的客户端程序，基于Qt5.4，支持歌曲搜索、在线播放、歌词解析。
+CleanPlayer是Baidu音乐的在线客户端程序，基于Qt5.4，支持歌曲搜索、在线播放、歌词解析。
+
+点击专辑封面进入或退出歌词界面
 
 ### TODO
 

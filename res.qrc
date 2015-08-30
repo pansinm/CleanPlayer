@@ -23,5 +23,6 @@
         <file>image/volume-low-icon.png</file>
         <file>image/volume-medium-icon.png</file>
         <file>image/volume-mute-icon.png</file>
+        <file>image/logo.png</file>
     </qresource>
 </RCC>

@@ -6,7 +6,7 @@
 #include<QDebug>
 #include<QQuickItem>
 #include<QString>
-
+#include<QIcon>
 #include "baidumusic.h"
 #include "util.h"
 int main(int argc,char* argv[])
@@ -20,7 +20,7 @@ int main(int argc,char* argv[])
 
     //无边框，背景透明
     //viewer.setFlags(Qt::FramelessWindowHint|Qt::Window|Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
-   // viewer.setTitle("Dae Player");
+   // viewer.setTitle("Clean Player");
 
     //这行不注释掉的话在XP系统无法正常显示
     //viewer.setColor(QColor(Qt::transparent));
@@ -28,7 +28,7 @@ int main(int argc,char* argv[])
     //viewer.rootContext()->setContextProperty("mainwindow",&viewer);
 
     viewer.setSource(QUrl("qrc:/qml/qml/Main.qml"));
-
+    viewer.setIcon(QIcon(":/image/image/logo.png"));
     viewer.show();
 
     return app.exec();
