@@ -87,6 +87,8 @@ Rectangle {
         for(var i in playlist.playlists){
            leftListModel.append({"listname":i});
         }
+        container.updatePlaylist("默认列表");
+        container.showPlaylist();
     }
 }
 

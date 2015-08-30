@@ -35,6 +35,7 @@ BaiduMusic::BaiduMusic(QObject *parent) : QObject(parent)
     suggestionReply = 0;
     songInfoReply = 0;
     songLinkReply = 0;
+    lyricReply = 0;
     manager.setCookieJar(&cookieJar);
 }
 
@@ -91,6 +92,15 @@ void BaiduMusic::getSongLink(QString songId)
     QUrl url = QUrl(ApiOfSongLink.arg(songId));
     songLinkReply = manager.get(QNetworkRequest(url));
     connect(songLinkReply,SIGNAL(finished()),this,SLOT(songLinkReplyFinished()));
+}
+
+void BaiduMusic::getLyric(QString url)
+{
+    if(lyricReply){
+        lyricReply->deleteLater();
+    }
+    lyricReply = manager.get(QNetworkRequest(QUrl(url)));
+    connect(lyricReply,SIGNAL(finished()),this,SLOT(lyricReplyFinished()));
 }
 
 QString BaiduMusic::unifyResult(QString r)
@@ -186,4 +196,15 @@ void BaiduMusic::songLinkReplyFinished()
     QString songlink = songLinkReply->readAll();
 
     emit getSongLinkComplete(unifyResult(songlink));
+}
+
+void BaiduMusic::lyricReplyFinished()
+{
+    QString url = lyricReply->url().toString();
+    if(lyricReply->error()){
+        emit getLyricComplete(url,"");
+        return;
+    }
+    qDebug()<<lyricReply->rawHeaderList();
+    emit getLyricComplete(url,lyricReply->readAll());
 }

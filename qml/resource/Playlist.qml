@@ -9,8 +9,7 @@ Item {
     property MediaPlayer mediaPlayer
     property BaiduMusic baiduMusic
     property Util util
-
-
+    property string currentSid
     //列表中的歌曲数目
     function count(list){
         var listname = list ? list : currentList;
@@ -73,11 +72,12 @@ Item {
             mediaPlayer.play();
             return;
         }
-
+        var curSid = playlists[currentList][index].sid;
+        currentSid = curSid;
         //如果不是本地音乐，则获取歌曲链接
-        baiduMusic.getSongLink(playlists[currentList][index].sid);
+        baiduMusic.getSongLink(curSid);
         //获取专辑图片
-        baiduMusic.getSongInfo(playlists[currentList][index].sid);
+        baiduMusic.getSongInfo(curSid);
     }
 
     //下一首

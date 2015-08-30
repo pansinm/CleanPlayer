@@ -43,7 +43,8 @@ DISTFILES += \
     qml/resource/Container.qml \
     qml/resource/func.js \
     qml/resource/BottomBar.qml \
-    qml/resource/SideBar.qml
+    qml/resource/SideBar.qml \
+    qml/resource/Lyric.qml
 
 # icons
 icons.files = data/clean-player.png

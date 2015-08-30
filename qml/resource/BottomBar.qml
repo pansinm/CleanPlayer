@@ -13,6 +13,7 @@ Rectangle {
     property MediaPlayer mediaPlayer
     property Playlist playlist
     property BaiduMusic baiduMusic
+    property bool lyricHidden:true
 
     Rectangle{
         id: songPicWrapper
@@ -27,6 +28,12 @@ Rectangle {
         Image{
             id:songPic
             anchors.fill: parent
+        }
+        MouseArea{
+            anchors.fill: parent
+            onClicked:{
+                lyricHidden=!lyricHidden;
+            }
         }
     }
 

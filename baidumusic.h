@@ -41,28 +41,32 @@ public:
      */
     Q_INVOKABLE void getSongLink(QString songId);
 
+    /**
+     * @brief getLyric 根据歌词链接下载歌词
+     * @param url
+     */
+    Q_INVOKABLE void getLyric(QString url);
+
+
 private:
     QNetworkAccessManager manager;
     QNetworkReply* searchReply;
     QNetworkReply* suggestionReply;
     QNetworkReply* songInfoReply;
     QNetworkReply* songLinkReply;
-
-    QString nextKeywordOfSearch;
-    QString nextKeywordOfSug;
-    QString nextSongIdOfInfo;
-    QString nextSongIdOfLink;
+    QNetworkReply* lyricReply;
 
     //保存所有cookie
     CookieJar cookieJar;
 
-    //同一结果，如songid转换为sid，songname转换为sname
+    //统一结果，如songid转换为sid，songname转换为sname
     QString unifyResult(QString r);
 private slots:
     void searchReplyFinished();
     void suggestionReplyFinished();
     void songInfoReplyFinished();
     void songLinkReplyFinished();
+    void lyricReplyFinished();
 signals:
     /**
      * @brief searchComplete 搜索完毕
@@ -134,6 +138,8 @@ signals:
      * @param songLink
      */
     void getSongLinkComplete(QString songLink);
+
+    void getLyricComplete(QString url,QString lyricContent);
 public slots:
 };
 

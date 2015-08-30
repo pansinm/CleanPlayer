@@ -5,7 +5,7 @@ import CleanPlayerCore 1.0
 Rectangle {
     width: parent.width
     height: 60
-    color: "#444444"
+    color: "#444"
     property Suggestion suggestion
     property BaiduMusic baiduMusic
     //左上角
@@ -15,9 +15,11 @@ Rectangle {
         height: parent.height
         anchors.top: parent.top
         anchors.left: parent.left
+        color:"#333"
         Text {
             id: brandText
             font.pixelSize:28
+            color: "#eee"
             text: qsTr("CleanPlayer")
             anchors.centerIn: parent
         }

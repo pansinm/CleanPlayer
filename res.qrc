@@ -10,6 +10,7 @@
         <file>qml/resource/Suggestion.qml</file>
         <file>qml/resource/TopBar.qml</file>
         <file>qml/resource/SideBar.qml</file>
+        <file>qml/resource/Lyric.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/next.png</file>

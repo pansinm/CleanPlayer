@@ -56,6 +56,9 @@ Rectangle {
         mediaPlayer: mediaplayer
         playlist: playlist
         baiduMusic: baiduMusic
+        onLyricHiddenChanged: {
+            lyricView.visible = !lyricHidden;
+        }
     }
 
     //边栏
@@ -85,10 +88,24 @@ Rectangle {
         playlist: playlist
     }
 
+    //歌词
+    Lyric{
+        id:lyricView
+        baiduMusic:baiduMusic
+        playlist:playlist
+        mediaPlayer:mediaplayer
+        z:2
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: sideBar.top
+        anchors.bottom: bottomBar.top
+        visible: false
+    }
+
     //内容区域
     Container{
         id:container
-
+        lyric:lyricView
         anchors.left:sideBar.right
         anchors.top: topBar.bottom
         anchors.bottom: bottomBar.top
@@ -97,6 +114,8 @@ Rectangle {
         baiduMusic: baiduMusic
         playlist: playlist
     }
+
+
 
     MouseArea{
         anchors.fill: parent
