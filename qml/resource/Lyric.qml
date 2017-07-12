@@ -113,7 +113,7 @@ Rectangle {
         onGetSongLinkComplete:{
             try{
                 var link = JSON.parse(songLink);
-                console.log("-----------------------", JSON.stringify(link));
+
                 //如果还是当前播放歌曲，则立即播放，否则不处理
                 if(playlist.currentSid == link.data.songList[0].sid){
                     if(link.data.songList[0].lrcLink === ''){
@@ -125,7 +125,7 @@ Rectangle {
                     if (!/^http/.test(lrcLink)) {
                         lrcLink = 'http://play.baidu.com' + link.data.songList[0].lrcLink
                     }
-                    console.log("-----------------------", JSON.stringify(lrcLink));
+
                     currentLyricUrl = lrcLink;
                     baiduMusic.getLyric(lrcLink);
                 }
@@ -134,7 +134,6 @@ Rectangle {
             }
         }
         onGetLyricComplete:{
-             console.log("-----------------------", JSON.stringify(lyricContent));
             if(currentLyricUrl==url){
                 //解析歌词，允许单行多时间
                 var lines = lyricContent.split('\n');
