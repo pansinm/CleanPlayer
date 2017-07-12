@@ -1,4 +1,4 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import CleanPlayerCore 1.0
 import QtMultimedia 5.4
 
@@ -113,21 +113,28 @@ Rectangle {
         onGetSongLinkComplete:{
             try{
                 var link = JSON.parse(songLink);
+                console.log("-----------------------", JSON.stringify(link));
                 //如果还是当前播放歌曲，则立即播放，否则不处理
                 if(playlist.currentSid == link.data.songList[0].sid){
-                    if(link.data.songList[0].lrcLink==''){
+                    if(link.data.songList[0].lrcLink === ''){
                         return;
                     }
 
-                    var url = 'http://play.baidu.com'+link.data.songList[0].lrcLink
-                    currentLyricUrl = url;
-                    baiduMusic.getLyric(url);
+                    var lrcLink = link.data.songList[0].lrcLink;
+
+                    if (!/^http/.test(lrcLink)) {
+                        lrcLink = 'http://play.baidu.com' + link.data.songList[0].lrcLink
+                    }
+                    console.log("-----------------------", JSON.stringify(lrcLink));
+                    currentLyricUrl = lrcLink;
+                    baiduMusic.getLyric(lrcLink);
                 }
             }catch(e){
                 console.log("getLink:"+e);
             }
         }
         onGetLyricComplete:{
+             console.log("-----------------------", JSON.stringify(lyricContent));
             if(currentLyricUrl==url){
                 //解析歌词，允许单行多时间
                 var lines = lyricContent.split('\n');

@@ -1,4 +1,4 @@
-#include <QDebug>
+﻿#include <QDebug>
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QByteArray>
@@ -177,7 +177,7 @@ void BaiduMusic::suggestionReplyFinished()
 void BaiduMusic::songInfoReplyFinished()
 {
     if(songInfoReply->error()){
-        emit getSongInfoComplete("{error:"+songInfoReply->errorString()+"}");
+        emit getSongInfoComplete("{error:" + songInfoReply->errorString() + "}");
         return;
     }
     
@@ -189,7 +189,7 @@ void BaiduMusic::songLinkReplyFinished()
 {
 
     if(songLinkReply->error()){
-        emit getSongLinkComplete("{error:"+songLinkReply->errorString()+"}");
+        emit getSongLinkComplete("{error:" + songLinkReply->errorString() + "}");
         return;
     }
     
@@ -201,10 +201,11 @@ void BaiduMusic::songLinkReplyFinished()
 void BaiduMusic::lyricReplyFinished()
 {
     QString url = lyricReply->url().toString();
+
     if(lyricReply->error()){
-        emit getLyricComplete(url,"");
+        emit getLyricComplete(url, "");
         return;
     }
     qDebug()<<lyricReply->rawHeaderList();
-    emit getLyricComplete(url,lyricReply->readAll());
+    emit getLyricComplete(url, lyricReply->readAll());
 }
