@@ -22,7 +22,7 @@ Rectangle {
         anchors.bottom: bottomTools.top
         onDoubleClicked: {
             var song = resultModel.get(row)
-            playlist.addSong(Func.objClone(song))
+            playlist.addSong(Func.cloneObject(song))
             var last = playlist.count() - 1
             playlist.setIndex(last)
         }

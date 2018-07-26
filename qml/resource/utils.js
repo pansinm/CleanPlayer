@@ -1,5 +1,5 @@
 //克隆对象
-function objClone(obj) {
+function cloneObject(obj) {
     var o
     switch (typeof obj) {
     case 'undefined':
@@ -20,14 +20,14 @@ function objClone(obj) {
             if (obj instanceof Array) {
                 o = []
                 for (var i = 0, len = obj.length; i < len; i++) {
-                    o.push(objClone(obj[i]))
+                    o.push(cloneObject(obj[i]))
                 }
             } else {
                 o = {
 
                 }
                 for (var k in obj) {
-                    o[k] = objClone(obj[k])
+                    o[k] = cloneObject(obj[k])
                 }
             }
         }

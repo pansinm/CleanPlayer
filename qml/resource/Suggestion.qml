@@ -35,7 +35,7 @@ Rectangle {
                     wrapper.ListView.view.currentIndex = index
                     hide()
                     var song = suggestionModel.get(index)
-                    playlist.addSong(Func.objClone(song))
+                    playlist.addSong(Func.cloneObject(song))
                     var last = playlist.count() - 1
                     playlist.setIndex(last)
                 }
