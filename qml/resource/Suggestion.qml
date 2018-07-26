@@ -1,6 +1,6 @@
 import QtQuick 2.4
 import CleanPlayerCore 1.0
-import "func.js" as Func
+import "utils.js" as Func
 
 
 //搜索建议弹出框

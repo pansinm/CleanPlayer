@@ -1,7 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.3
 import CleanPlayerCore 1.0
-import "func.js" as Func
+import "utils.js" as Func
 
 
 //搜索结果

@@ -6,7 +6,7 @@
         <file>qml/resource/PlaylistView.qml</file>
         <file>qml/resource/BottomBar.qml</file>
         <file>qml/resource/Container.qml</file>
-        <file>qml/resource/func.js</file>
+        <file>qml/resource/utils.js</file>
         <file>qml/resource/Suggestion.qml</file>
         <file>qml/resource/TopBar.qml</file>
         <file>qml/resource/SideBar.qml</file>
