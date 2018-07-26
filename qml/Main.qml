@@ -6,19 +6,18 @@ import "./resource"
 import CleanPlayerCore 1.0
 
 Rectangle {
-    id:root
-    width:1000
+    id: root
+    width: 1000
     height: 600
     color: "#333333"
 
     MediaPlayer {
-         id: mediaplayer
-
-     }
+        id: mediaplayer
+    }
 
     //工具函数
     Util {
-        id:util
+        id: util
     }
 
     //百度音乐Api
@@ -27,16 +26,16 @@ Rectangle {
     }
 
     //播放列表
-    Playlist{
-        id:playlist
+    Playlist {
+        id: playlist
         mediaPlayer: mediaplayer
         baiduMusic: baiduMusic
-        util:util
+        util: util
     }
 
     //顶栏
-    TopBar{
-        id:topBar
+    TopBar {
+        id: topBar
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -47,7 +46,7 @@ Rectangle {
 
     //底部栏
     BottomBar {
-        id:bottomBar
+        id: bottomBar
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         width: parent.width
@@ -57,13 +56,13 @@ Rectangle {
         playlist: playlist
         baiduMusic: baiduMusic
         onLyricHiddenChanged: {
-            lyricView.visible = !lyricHidden;
+            lyricView.visible = !lyricHidden
         }
     }
 
     //边栏
-    SideBar{
-        id:sideBar
+    SideBar {
+        id: sideBar
 
         anchors.left: parent.left
         anchors.top: topBar.bottom
@@ -74,27 +73,27 @@ Rectangle {
     }
 
     //搜索建议
-    Suggestion{
-        id:suggestion
+    Suggestion {
+        id: suggestion
 
-        anchors.left:sideBar.right
+        anchors.left: sideBar.right
         anchors.leftMargin: 28
         anchors.top: topBar.bottom
         anchors.topMargin: -15
 
-        z:100
+        z: 100
 
         baiduMusic: baiduMusic
         playlist: playlist
     }
 
     //歌词
-    Lyric{
-        id:lyricView
-        baiduMusic:baiduMusic
-        playlist:playlist
-        mediaPlayer:mediaplayer
-        z:2
+    Lyric {
+        id: lyricView
+        baiduMusic: baiduMusic
+        playlist: playlist
+        mediaPlayer: mediaplayer
+        z: 2
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: sideBar.top
@@ -103,10 +102,10 @@ Rectangle {
     }
 
     //内容区域
-    Container{
-        id:container
-        lyric:lyricView
-        anchors.left:sideBar.right
+    Container {
+        id: container
+        lyric: lyricView
+        anchors.left: sideBar.right
         anchors.top: topBar.bottom
         anchors.bottom: bottomBar.top
         anchors.right: parent.right
@@ -115,32 +114,29 @@ Rectangle {
         playlist: playlist
     }
 
-
-
-    MouseArea{
+    MouseArea {
         anchors.fill: parent
-        z:-1
+        z: -1
         onClicked: {
-            suggestion.hide();
+            suggestion.hide()
         }
     }
 
-   //关闭时
+    //关闭时
     Component.onDestruction: {
         //保存播放列表
-        playlist.saveTo("playlist");
+        playlist.saveTo("playlist")
     }
 
     //加载结束
     Component.onCompleted: {
         //加载播放列表
-        playlist.loadFrom("playlist");
-        sideBar.update();
+        playlist.loadFrom("playlist")
+        sideBar.update()
 
         //列表中第一首为默认播放歌曲
-        if(playlist.count()>0){
-            playlist.index = 0;
+        if (playlist.count() > 0) {
+            playlist.index = 0
         }
     }
 }
-
